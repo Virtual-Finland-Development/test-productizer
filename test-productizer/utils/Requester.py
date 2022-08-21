@@ -144,8 +144,4 @@ class Requester(Generic[T]):
     def validate_result(self, result: T) -> None:
         """Validate result if validator is defined"""
         if callable(self.validator):
-            if isinstance(result, list):
-                for item in result:  # type: ignore
-                    self.validator(item)
-            else:
-                self.validator(result)
+            self.validator(result)

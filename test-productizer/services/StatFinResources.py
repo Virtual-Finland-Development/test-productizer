@@ -45,7 +45,7 @@ async def get_resources_list(query: str = "*", filters: str = "*") -> List[StatF
             },
         },
         response_type=List[StatFinResourcesResponseInputListItem],
-        validator=StatFinResourcesResponseInputListItem.parse_obj,
+        validator=lambda items: StatFinResourcesResponseInputListItem.parse_obj(items[0]) if len(items) > 0 else None,
     )
 
     # Transform and return response items to data product syntax
