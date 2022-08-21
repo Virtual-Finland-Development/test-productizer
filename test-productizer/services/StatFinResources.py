@@ -6,12 +6,12 @@ configuration = {
     "API_ENDPOINT": "https://statfin.stat.fi/pxweb/api/v1/en/StatFin/",
 }
 
-"""
-The expected structure of the data sources singular item in the external API request response (input)
-"""
-
 
 class StatFinResourcesResponseInputListItem(BaseModel):
+    """
+    The expected structure of the data sources item in the external API response
+    --> The data source syntax"""
+
     published: str
     score: float
     title: str
@@ -19,24 +19,20 @@ class StatFinResourcesResponseInputListItem(BaseModel):
     id: str
 
 
-"""
-The syntax for the output item
---> The data product syntax
-"""
-
-
 class StatFinResourcesResponseOutputListItem(BaseModel):
+    """
+    The syntax for the output item
+    --> The data product syntax"""
+
     title: str
     path: str
     id: str
 
 
-"""
-The getter function for the resources list
-"""
-
-
 async def get_resources_list(query: str = "*", filters: str = "*") -> List[StatFinResourcesResponseOutputListItem]:
+    """
+    The getter function for the resources list
+    """
     # Define the external data source API requester
     response_type = List[StatFinResourcesResponseInputListItem]  # typehint for the response
     requester = Requester[response_type](

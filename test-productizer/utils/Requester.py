@@ -7,25 +7,24 @@ T = TypeVar("T")
 KnownRequestMethods = Literal["GET", "POST"]
 RequestParams = Dict[str, Any]
 RequestData = Any
+RequestHeaders = Dict[str, Any]
 
 
-class BaseRequest(TypedDict, total=True):
+class RequestRequiredParts(TypedDict, total=True):
     url: str
 
 
-class Request(BaseRequest, total=False):
+class Request(RequestRequiredParts, total=False):
     method: Optional[KnownRequestMethods]
     params: Optional[RequestParams]
     data: Optional[RequestData]
-    headers: Optional[Dict[str, Any]]
-
-
-"""
-A type-awareish wrapper for the aiohttp.ClientSession class
-"""
+    headers: Optional[RequestHeaders]
 
 
 class Requester(Generic[T]):
+    """
+    A type-aware wrapper for the aiohttp.ClientSession class"""
+
     requester_name: str
     request_input: Optional[Request]
 
@@ -33,52 +32,68 @@ class Requester(Generic[T]):
         self.requester_name = name
         self.request_input = request
 
-    """
-    Requesting methods
-    """
+    #
+    # Requesting methods
+    #
+    async def fetch(self, request: Optional[Request] = None) -> T:
+        if request is not None:
+            return await self.request(request)
+        return await self.request(self.request_input)
 
-    async def fetch(self) -> T:
-        if self.request_input is not None:
-            return await self.request(
-                self.request_input["method"] if "method" in self.request_input else None,
-                self.request_input["url"],
-                self.request_input["params"] if "params" in self.request_input else None,
-                self.request_input["data"] if "data" in self.request_input else None,
-            )
-        else:
-            raise Exception("Request input not defined")
+    async def post(
+        self,
+        url: str,
+        params: Optional[RequestParams] = None,
+        data: Optional[RequestData] = None,
+        headers: Optional[RequestHeaders] = None,
+    ) -> T:
+        return await self.request(
+            {
+                "method": "POST",
+                "url": url,
+                "params": params,
+                "data": data,
+                "headers": headers,
+            }
+        )
+
+    async def get(
+        self, url: str, params: Optional[RequestParams] = None, headers: Optional[RequestHeaders] = None
+    ) -> T:
+        return await self.request(
+            {
+                "method": "GET",
+                "url": url,
+                "params": params,
+                "headers": headers,
+            }
+        )
 
     async def request(
         self,
-        method: Optional[KnownRequestMethods],
-        url: str,
-        params: Optional[RequestParams] = None,
-        data: Optional[RequestData] = None,
+        request: Optional[Request] = None,
     ) -> T:
-        return await self.fetchJSON(method, url, params, data)
+        if request is None:
+            raise Exception("Request input not defined")
+        return await self.fetchJSON(**request)
 
-    async def post(self, url: str, params: Optional[RequestParams] = None, data: Optional[RequestData] = None) -> T:
-        return await self.request("POST", url, params, data)
-
-    async def get(self, url: str, params: Optional[RequestParams] = None) -> T:
-        return await self.request("GET", url, params)
-
-    """
-    Request actuator
-    """
-
+    #
+    # Request actuator
+    #
     async def fetchJSON(
         self,
-        method: Optional[KnownRequestMethods],
         url: str,
+        method: Optional[KnownRequestMethods] = None,
         params: Optional[RequestParams] = None,
         data: Optional[RequestData] = None,
+        headers: Optional[RequestHeaders] = None,
     ) -> T:
         try:
             async with aiohttp.ClientSession() as session:
                 opts = {
                     "params": params,
                     "data": data,
+                    "headers": headers,
                     "skip_auto_headers": ["user-agent"],
                     "allow_redirects": False,
                     "compress": True,
@@ -97,7 +112,11 @@ class Requester(Generic[T]):
         except Exception as e:
             raise self.prepare_expection(e)
 
+    #
+    # Utils
+    #
     def prepare_expection(self, exception: Union[Exception, str]) -> Exception:
+
         errorMessagePrefix = f"{self.requester_name}: Error --> "
         if isinstance(exception, aiohttp.ClientResponseError):
             return Exception(f"{errorMessagePrefix}{exception.message}")
