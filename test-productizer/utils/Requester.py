@@ -1,4 +1,5 @@
-from typing import Dict, Any, Literal, Type, TypeVar, Generic, TypedDict, Optional, Union
+from typing import Dict, Any, Literal, Type, TypeVar, Generic, TypedDict, Optional, Union, Callable
+from pydantic import ValidationError
 import orjson
 import aiohttp
 
@@ -21,10 +22,16 @@ class Request(RequestRequiredParts, total=False):
     headers: Optional[RequestHeaders]
 
 
-async def fetch(request: Request, response_type: Type[T], name: str = "Data fetcher") -> T:
+async def fetch(
+    request: Request,
+    response_type: Type[T],
+    name: str = "Data fetcher",
+    validator: Optional[Callable[[Any], Any]] = None,
+) -> T:
     """A wrapper for requester"""
-    requester = Requester[response_type](name, request)
-    return await requester.fetch()
+    requester = Requester[response_type](name, request, validator)
+    items = await requester.fetch()
+    return items  # type: ignore
 
 
 class Requester(Generic[T]):
@@ -33,10 +40,12 @@ class Requester(Generic[T]):
 
     requester_name: str
     request_input: Optional[Request]
+    validator: Optional[Callable[[Any], Any]] = None
 
-    def __init__(self, name: str, request: Optional[Request]) -> None:
+    def __init__(self, name: str, request: Optional[Request], validator: Optional[Callable[[Any], Any]] = None) -> None:
         self.requester_name = name
         self.request_input = request
+        self.validator = validator
 
     #
     # Requesting methods
@@ -111,7 +120,9 @@ class Requester(Generic[T]):
                 async with res:
                     if res.status == 200:
                         try:
-                            return await res.json(loads=orjson.loads)
+                            result = await res.json(loads=orjson.loads)
+                            self.validate_result(result)
+                            return result
                         except Exception as e:
                             raise self.prepare_expection(e)
                     else:
@@ -122,8 +133,19 @@ class Requester(Generic[T]):
     # Utils
     #
     def prepare_expection(self, exception: Union[Exception, str]) -> Exception:
-
+        """Prefix expections with requester name"""
         errorMessagePrefix = f"{self.requester_name}: Error --> "
         if isinstance(exception, aiohttp.ClientResponseError):
             return Exception(f"{errorMessagePrefix}{exception.message}")
+        if isinstance(exception, ValidationError):
+            return ValueError(f"{errorMessagePrefix}ValidationError --> {exception}")
         return ValueError(f"{errorMessagePrefix}{exception}")
+
+    def validate_result(self, result: T) -> None:
+        """Validate result if validator is defined"""
+        if callable(self.validator):
+            if isinstance(result, list):
+                for item in result:  # type: ignore
+                    self.validator(item)
+            else:
+                self.validator(result)
