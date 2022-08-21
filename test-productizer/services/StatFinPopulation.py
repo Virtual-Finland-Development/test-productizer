@@ -8,7 +8,7 @@ configuration = {
 }
 
 #
-# External API response item model
+# External API response item model(s)
 #
 class StatFinPopulationResponseDimensionsCategory(BaseModel):
     index: Dict[str, str]
@@ -37,7 +37,7 @@ class StatFinPopulationResponse(BaseModel):
 
 
 #
-# Output item model
+# Output item model(s)
 #
 class StatFinPopulationDataProduct(BaseModel):
     """
@@ -50,6 +50,9 @@ class StatFinPopulationDataProduct(BaseModel):
     updated: str
 
 
+#
+# The request handler
+#
 async def get_population(city_query: str = "*", year: str = "2021", locale: str = "fi") -> StatFinPopulationDataProduct:
     """
     The getter function for the resources list
