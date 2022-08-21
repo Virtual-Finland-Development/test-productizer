@@ -25,12 +25,6 @@ A type-awareish wrapper for the aiohttp.ClientSession class
 """
 
 
-async def fetch(name: str, response_type: T, request: Optional[Request]) -> T:
-    requester = Requester[T](name, request)
-    return await requester.fetch()
-
-
-# Implementation of the Requester
 class Requester(Generic[T]):
     requester_name: str
     request_input: Optional[Request]
