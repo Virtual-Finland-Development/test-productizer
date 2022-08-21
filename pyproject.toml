@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "test-productizer"
+name = "testbed-test-productizer"
 version = "0.1.0"
 description = ""
 authors = ["Lassi Piironen <lsipii@kapsi.fi>"]

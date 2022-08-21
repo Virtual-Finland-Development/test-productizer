@@ -1,4 +1,4 @@
-app = "test-productizer.main:app"
+app = "testbed-test-productizer.main:app"
 
 install:
 	python -m pip install poetry

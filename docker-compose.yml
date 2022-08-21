@@ -1,7 +1,7 @@
 version: "3.6"
 
 services:
-  test-productizer:
+  testbed-test-productizer:
     build:
       context: .
       dockerfile: Dockerfile

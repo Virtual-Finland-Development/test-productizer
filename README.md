@@ -1,14 +1,10 @@
-# test-productizer
+# testbed-test-productizer
 
-A simple test productizer app
+A simple test testbed-productizer app
 
 ## Description
 
-An example environment for setting up a data source for the use of the dataspace-product.
-
-The devenv-setup access points used:
-
-- https://statfin.stat.fi/pxweb/api/v1/en/StatFin/
+An example environment for setting up a data source for the use of the testbed dataspace.
 
 ## Running the app
 
@@ -20,8 +16,8 @@ The devenv-setup access points used:
 
 #### docker run
 
-- `docker build -t test-productizer .`
-- `docker run --rm -it -p 8000:8000 test-productizer`
+- `docker build -t testbed-test-productizer .`
+- `docker run --rm -it -p 8000:8000 testbed-test-productizer`
 
 ### Run locally with python
 
@@ -38,7 +34,7 @@ The devenv-setup access points used:
 #### Usage
 
 - `make run` # Run the app
-- `make dev` # run with hot reload
+- `make dev` # run with hot-reload
 
 ## Usage:
 
