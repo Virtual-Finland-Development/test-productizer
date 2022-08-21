@@ -1,6 +1,6 @@
 from typing import List
 from pydantic import BaseModel
-from ..utils.Requester import Requester
+from ..utils.Requester import fetch
 
 configuration = {
     "API_ENDPOINT": "https://statfin.stat.fi/pxweb/api/v1/en/StatFin/",
@@ -33,10 +33,10 @@ async def get_resources_list(query: str = "*", filters: str = "*") -> List[StatF
     """
     The getter function for the resources list
     """
-    # Define the external data source API requester
-    response_type = List[StatFinResourcesResponseInputListItem]  # typehint for the response
-    requester = Requester[response_type](
-        name="Get resources list",
+
+    # Fetch items from the external data source API
+    items = await fetch(
+        name=__name__,
         request={
             "url": configuration["API_ENDPOINT"],
             "params": {
@@ -44,10 +44,8 @@ async def get_resources_list(query: str = "*", filters: str = "*") -> List[StatF
                 "filter": filters,
             },
         },
+        response_type=List[StatFinResourcesResponseInputListItem],
     )
-
-    # Fetch items from the external data source API
-    items = await requester.fetch()
 
     # Transform and return response items to data product syntax
     return list(map(lambda item: StatFinResourcesResponseOutputListItem.parse_obj(item), items))

@@ -1,4 +1,4 @@
-from typing import Dict, Any, Literal, TypeVar, Generic, TypedDict, Optional, Union
+from typing import Dict, Any, Literal, Type, TypeVar, Generic, TypedDict, Optional, Union
 import orjson
 import aiohttp
 
@@ -19,6 +19,12 @@ class Request(RequestRequiredParts, total=False):
     params: Optional[RequestParams]
     data: Optional[RequestData]
     headers: Optional[RequestHeaders]
+
+
+async def fetch(request: Request, response_type: Type[T], name: str = "Data fetcher") -> T:
+    """A wrapper for requester"""
+    requester = Requester[response_type](name, request)
+    return await requester.fetch()
 
 
 class Requester(Generic[T]):
