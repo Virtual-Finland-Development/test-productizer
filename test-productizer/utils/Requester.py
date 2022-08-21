@@ -26,7 +26,7 @@ async def fetch(
     request: Request,
     response_type: Type[T],
     name: str = "Data fetcher",
-    validator: Optional[Callable[[Any], Any]] = None,
+    validator: Optional[Callable[[T], Any]] = None,
 ) -> T:
     """A wrapper for requester"""
     requester = Requester[response_type](name, request, validator)
@@ -40,9 +40,9 @@ class Requester(Generic[T]):
 
     requester_name: str
     request_input: Optional[Request]
-    validator: Optional[Callable[[Any], Any]] = None
+    validator: Optional[Callable[[T], Any]] = None
 
-    def __init__(self, name: str, request: Optional[Request], validator: Optional[Callable[[Any], Any]] = None) -> None:
+    def __init__(self, name: str, request: Optional[Request], validator: Optional[Callable[[T], Any]] = None) -> None:
         self.requester_name = name
         self.request_input = request
         self.validator = validator
