@@ -2,6 +2,7 @@ from typing import Dict, Any, Literal, Type, TypeVar, Generic, TypedDict, Option
 from pydantic import ValidationError
 import orjson
 import aiohttp
+from .helpers import ensure_json_content_type_header, omit_empty_dict_attributes
 
 T = TypeVar("T")
 
@@ -26,12 +27,12 @@ async def fetch(
     request: Request,
     response_type: Type[T],
     name: str = "Data fetcher",
-    validator: Optional[Callable[[T], Any]] = None,
+    formatter: Optional[Callable[[T], Any]] = None,
 ) -> T:
     """A wrapper for requester"""
-    requester = Requester[response_type](name, request, validator)
+    requester = Requester[response_type](name, request, formatter)
     items = await requester.fetch()
-    return items  # type: ignore
+    return items
 
 
 class Requester(Generic[T]):
@@ -40,12 +41,12 @@ class Requester(Generic[T]):
 
     requester_name: str
     request_input: Optional[Request]
-    validator: Optional[Callable[[T], Any]] = None
+    formatter: Optional[Callable[[T], Any]] = None
 
-    def __init__(self, name: str, request: Optional[Request], validator: Optional[Callable[[T], Any]] = None) -> None:
+    def __init__(self, name: str, request: Optional[Request], formatter: Optional[Callable[[T], Any]] = None) -> None:
         self.requester_name = name
         self.request_input = request
-        self.validator = validator
+        self.formatter = formatter
 
     #
     # Requesting methods
@@ -93,43 +94,6 @@ class Requester(Generic[T]):
         return await self.fetchJSON(**request)
 
     #
-    # Request actuator
-    #
-    async def fetchJSON(
-        self,
-        url: str,
-        method: Optional[KnownRequestMethods] = None,
-        params: Optional[RequestParams] = None,
-        data: Optional[RequestData] = None,
-        headers: Optional[RequestHeaders] = None,
-    ) -> T:
-        async with aiohttp.ClientSession() as session:
-            opts = {
-                "params": params,
-                "data": data,
-                "headers": headers,
-                "skip_auto_headers": ["user-agent"],
-                "allow_redirects": False,
-                "compress": True,
-                "timeout": 30.0,
-            }
-
-            request_method = method if method is not None else "GET"
-
-            async with session.request(request_method, url, **opts) as res:
-                async with res:
-                    if res.status == 200:
-                        try:
-                            result = await res.json(loads=orjson.loads)
-                            self.validate_result(result)
-                            return result
-                        except Exception as e:
-                            raise self.prepare_expection(e)
-                    else:
-                        text = await res.text()
-                        raise self.prepare_expection(text)
-
-    #
     # Utils
     #
     def prepare_expection(self, exception: Union[Exception, str]) -> Exception:
@@ -141,7 +105,50 @@ class Requester(Generic[T]):
             return ValueError(f"{errorMessagePrefix}ValidationError --> {exception}")
         return ValueError(f"{errorMessagePrefix}{exception}")
 
-    def validate_result(self, result: T) -> None:
-        """Validate result if validator is defined"""
-        if callable(self.validator):
-            self.validator(result)
+    def format_result(self, result: T) -> T:
+        """Validate & format result if formatter is defined"""
+        if callable(self.formatter):
+            return self.formatter(result)
+        return result
+
+    #
+    # Request actuator
+    #
+    async def fetchJSON(
+        self,
+        url: str,
+        method: Optional[KnownRequestMethods] = None,
+        params: Optional[RequestParams] = None,
+        data: Optional[RequestData] = None,
+        headers: Optional[RequestHeaders] = None,
+    ) -> T:
+
+        # https://github.com/aio-libs/aiohttp/issues/5975
+        orjson_wrapped: Callable[[Any], str] = lambda i: (orjson.dumps(i).decode())
+
+        opts = omit_empty_dict_attributes(
+            {
+                "params": params,
+                "json": data,
+                "headers": ensure_json_content_type_header(headers),
+                "skip_auto_headers": ["user-agent"],
+                "allow_redirects": False,
+                # "compress": True,
+                "timeout": 30.0,
+            }
+        )
+
+        request_method = method.upper() if method is not None else "GET"
+
+        async with aiohttp.ClientSession(json_serialize=orjson_wrapped) as session:
+            async with session.request(request_method, url, **opts) as res:
+                async with res:
+                    if res.status == 200:
+                        try:
+                            result = await res.json(loads=orjson.loads)
+                            return self.format_result(result)
+                        except Exception as e:
+                            raise self.prepare_expection(e)
+                    else:
+                        text = await res.text()
+                        raise self.prepare_expection(text)
