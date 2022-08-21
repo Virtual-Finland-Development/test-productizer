@@ -94,29 +94,29 @@ class Requester(Generic[T]):
         data: Optional[RequestData] = None,
         headers: Optional[RequestHeaders] = None,
     ) -> T:
-        try:
-            async with aiohttp.ClientSession() as session:
-                opts = {
-                    "params": params,
-                    "data": data,
-                    "headers": headers,
-                    "skip_auto_headers": ["user-agent"],
-                    "allow_redirects": False,
-                    "compress": True,
-                    "timeout": 30.0,
-                }
+        async with aiohttp.ClientSession() as session:
+            opts = {
+                "params": params,
+                "data": data,
+                "headers": headers,
+                "skip_auto_headers": ["user-agent"],
+                "allow_redirects": False,
+                "compress": True,
+                "timeout": 30.0,
+            }
 
-                request_method = method if method is not None else "GET"
+            request_method = method if method is not None else "GET"
 
-                async with session.request(request_method, url, **opts) as res:
-                    async with res:
-                        if res.status == 200:
+            async with session.request(request_method, url, **opts) as res:
+                async with res:
+                    if res.status == 200:
+                        try:
                             return await res.json(loads=orjson.loads)
-                        else:
-                            text = await res.text()
-                            raise self.prepare_expection(text)
-        except Exception as e:
-            raise self.prepare_expection(e)
+                        except Exception as e:
+                            raise self.prepare_expection(e)
+                    else:
+                        text = await res.text()
+                        raise self.prepare_expection(text)
 
     #
     # Utils
