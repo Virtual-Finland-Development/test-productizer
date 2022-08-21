@@ -45,10 +45,19 @@ The devenv-setup access points used:
 - After the app running..
 - See endpoint documentation: http://localhost:8000/docs
 
+## Developer notes:
+
+When developmenting with a vscode editor, switch the python type-hinting to strictly enabled by a setting:
+
+```
+{
+  "python.analysis.typeCheckingMode": "strict"
+}
+```
+
 ### References
 
 - https://tilastokeskus.fi/ajk/verkkosivu-uudistus/uudistuksen-vaikutukset-statfin-tietokantaan.html
-
 - Dokumentaation: https://statfin.stat.fi/api1.html
 
 Vanhat linkit:
