@@ -37,6 +37,11 @@ class StatFinPopulationResponse(BaseModel):
     version: str
 
 
+class StatFinPopulationDataProductInput(BaseModel):
+    city_query: str = ""
+    year: str = "2021"
+
+
 #
 # Output item model(s)
 #

@@ -15,3 +15,14 @@ def ensure_json_content_type_header(headers: Optional[Dict[str, Any]]) -> Option
     if headers is not None and ("Content-Type" not in headers or "content-type" not in headers):
         headers["Content-Type"] = "application/json; charset=utf-8"
     return headers
+
+
+def ensure_dict(data: Any, allow_empty: bool = True) -> Dict[str, Any]:
+    """
+    Ensure that the data is a dict
+    """
+    if isinstance(data, dict):
+        return data  # type: ignore
+    if allow_empty:
+        return {}
+    raise ValueError("Data must be a dict")
