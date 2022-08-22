@@ -88,7 +88,9 @@ async def get_population(city_query: str = "", year: str = "2021", locale: str =
     )
 
     # Transform and return response items to data product syntax
-    return StatFinPopulationDataProduct(label=item.label, source=item.source, value=item.value[0], updated=item.updated)
+    return StatFinPopulationDataProduct(
+        label=format_data_product_label(item), source=item.source, value=item.value[0], updated=item.updated
+    )
 
 
 def resolve_api_code_for_area(city_query: str) -> str:
@@ -111,3 +113,13 @@ def resolve_api_code_for_area(city_query: str) -> str:
         API_code_for_area = region_entity["code"]
 
     return API_code_for_area
+
+
+def format_data_product_label(item: StatFinPopulationResponse) -> str:
+    """
+    Formats the data product label
+    """
+    dimensions = list(item.dimension.values())
+    first_dimension_category_label = list(dimensions[0].category.label.values())[0]
+    second_dimension_label = list(dimensions[1].category.label.values())[0]
+    return f"{second_dimension_label}, {first_dimension_category_label}"
