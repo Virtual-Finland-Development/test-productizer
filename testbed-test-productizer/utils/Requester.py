@@ -2,6 +2,7 @@ from typing import Dict, Any, Literal, Type, TypeVar, Generic, TypedDict, Option
 import orjson
 import aiohttp
 from .helpers import ensure_json_content_type_header, omit_empty_dict_attributes
+from pydantic import ValidationError
 
 T = TypeVar("T")
 
@@ -100,6 +101,8 @@ class Requester(Generic[T]):
         errorMessagePrefix = f"{self.requester_name}: Error --> "
         if isinstance(exception, aiohttp.ClientResponseError):
             return Exception(f"{errorMessagePrefix}{exception.message}")
+        if isinstance(exception, ValidationError):
+            return exception
         return ValueError(f"{errorMessagePrefix}{exception}")
 
     def format_result(self, result: T) -> T:

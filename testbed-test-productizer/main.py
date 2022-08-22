@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from .services.StatFinPopulation import StatFinPopulationDataProduct, get_population
+from pydantic import ValidationError
 
 app = FastAPI()
 
@@ -21,5 +22,7 @@ async def population(
 ):
     try:
         return await get_population(city_query, year)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
