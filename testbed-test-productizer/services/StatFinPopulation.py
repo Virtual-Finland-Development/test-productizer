@@ -1,7 +1,6 @@
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from ..utils.Requester import fetch
-from ..data.city_codes import CITY_CODES
 
 configuration = {
     "API_ENDPOINT": "https://statfin.stat.fi/PXWeb/api/v1",
@@ -37,9 +36,21 @@ class StatFinPopulationResponse(BaseModel):
     version: str
 
 
+class StatFinFiguresResponseVariables(BaseModel):
+    code: str
+    text: str
+    values: List[str]
+    valueTexts: List[str]
+
+
+class StatFinFiguresResponse(BaseModel):
+    title: str
+    variables: List[StatFinFiguresResponseVariables]
+
+
 class StatFinPopulationDataProductInput(BaseModel):
-    city_query: str = ""
-    year: str = "2021"
+    city_query: Optional[str]
+    year: Optional[int]
 
 
 #
@@ -59,14 +70,14 @@ class StatFinPopulationDataProduct(BaseModel):
 #
 # The request handler
 #
-async def get_population(city_query: str = "", year: str = "2021", locale: str = "fi") -> StatFinPopulationDataProduct:
+async def get_population(city_query: str = "", year: int = 2021, locale: str = "fi") -> StatFinPopulationDataProduct:
     """
     The getter function for the resources list
     """
 
     resource_url_path = f"{locale}/Kuntien_avainluvut/{year}/kuntien_avainluvut_{year}_viimeisin.px"  # @note: the path is correct for all locales
     resource_url = f"{configuration['API_ENDPOINT']}/{resource_url_path}"
-    API_code_for_area = resolve_api_code_for_area(city_query)
+    API_code_for_area = await resolve_api_code_for_area(city_query, year, locale)
 
     # Fetch items from the external data source API
     item = await fetch(
@@ -98,7 +109,7 @@ async def get_population(city_query: str = "", year: str = "2021", locale: str =
     )
 
 
-def resolve_api_code_for_area(city_query: str) -> str:
+async def resolve_api_code_for_area(city_query: str, year: int, locale: str) -> str:
     """
     Resolves the API code for the area
     """
@@ -106,16 +117,27 @@ def resolve_api_code_for_area(city_query: str) -> str:
     API_code_for_area = "SSS"  # Defaut: all areas
     if len(city_query) > 0:
         search_phrase = city_query.lower().strip()
-        region_entity = next(filter(lambda region: region["name"].lower() == search_phrase, CITY_CODES), None)
-        if region_entity is None:
-            suggestions = list(
-                map(
-                    lambda i: i["name"],
-                    filter(lambda region: region["name"].lower().__contains__(search_phrase), CITY_CODES),
-                )
-            )
+
+        figures = await fetch(
+            {
+                "url": f"{configuration['API_ENDPOINT']}/{locale}/Kuntien_avainluvut/{year}/kuntien_avainluvut_{year}_viimeisin.px"
+            },
+            response_type=StatFinFiguresResponse,
+            formatter=StatFinFiguresResponse.parse_obj,  # validates the response
+        )
+
+        figure_variables = list(figures.variables)[0]
+        if len(figure_variables.values) != len(figure_variables.valueTexts):
+            raise ValueError("Invalid city fiqures recived")
+
+        city_names = figure_variables.valueTexts
+        city_name = next(filter(lambda city_name: city_name.lower() == search_phrase, city_names), None)
+        if city_name is not None:
+            index = city_names.index(city_name)
+            API_code_for_area = figure_variables.values[index]
+        else:
+            suggestions = filter(lambda city_name: city_name.lower().__contains__(search_phrase), city_names)
             raise ValueError(f"City {city_query} not found: try one of {suggestions}")
-        API_code_for_area = region_entity["code"]
 
     return API_code_for_area
 

@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, ORJSONResponse
 
 from .services.StatFinPopulation import StatFinPopulationDataProduct, StatFinPopulationDataProductInput, get_population
 from pydantic import ValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
-app = FastAPI()
+app = FastAPI(default_response_class=ORJSONResponse)
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,15 +33,20 @@ async def root():
     response_model=StatFinPopulationDataProduct,
 )
 async def population(
-    city_query: str = "", year: str = "2021", request: Optional[StatFinPopulationDataProductInput] = None
+    city_query: str = "", year: int = 2021, request: Optional[StatFinPopulationDataProductInput] = None
 ):
     try:
+        params = {
+            "city_query": city_query,
+            "year": year,
+        }
         if request is not None:
-            if request.city_query is not None:
-                city_query = request.city_query
-            if request.year is not None:
-                year = request.year
-        return await get_population(city_query, year)
+            request_fields = request.dict()
+            for entry in params.keys():
+                if entry in request_fields and bool(request_fields[entry]):
+                    params[entry] = request_fields[entry]
+
+        return await get_population(**params)
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=str(e))
     except ValueError as e:

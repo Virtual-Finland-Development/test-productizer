@@ -25,7 +25,7 @@ class Request(RequestRequiredParts, total=False):
 
 async def fetch(
     request: Request,
-    response_type: Type[T],
+    response_type: Union[Type[T], Any] = Any,
     name: str = "Data fetcher",
     formatter: Optional[Callable[[T], Any]] = None,
 ) -> T:
