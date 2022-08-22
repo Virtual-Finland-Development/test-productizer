@@ -1,16 +1,31 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
+
 from .services.StatFinPopulation import StatFinPopulationDataProduct, get_population
 from pydantic import ValidationError
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get(
     "/",
-    summary="redirect to /test/undefined/population",
-    description="A redirect to /test/undefined/population",
+    summary="redirect to /docs",
+    description="A redirect to /docs",
 )
-@app.get(
+async def root():
+    return RedirectResponse("/docs")
+
+
+@app.post(
     "/test/undefined/population",
     summary="test/undefined/population Data Product",
     description="A test Data Product for the population query",
