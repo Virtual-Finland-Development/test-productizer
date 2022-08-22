@@ -128,7 +128,7 @@ async def resolve_api_code_for_area(city_query: str, year: int, locale: str) -> 
 
         figure_variables = list(figures.variables)[0]
         if len(figure_variables.values) != len(figure_variables.valueTexts):
-            raise ValueError("Invalid city fiqures recived")
+            raise ValueError("Invalid city fiqures received")
 
         city_names = figure_variables.valueTexts
         city_name = next(filter(lambda city_name: city_name.lower() == search_phrase, city_names), None)
