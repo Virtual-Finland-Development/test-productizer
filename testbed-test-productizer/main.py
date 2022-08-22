@@ -6,11 +6,11 @@ app = FastAPI()
 
 @app.get(
     "/",
-    summary="redirect to /population",
-    description="A redirect to /population",
+    summary="redirect to /test/undefied/population",
+    description="A redirect to /test/undefied/population",
 )
 @app.get(
-    "/population",
+    "/test/undefied/population",
     summary="test/undefied/population Data Product",
     description="A test Data Product for the population query",
     response_model=StatFinPopulationDataProduct,
