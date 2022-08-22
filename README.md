@@ -55,6 +55,7 @@ When developmenting with a vscode editor, switch the python type-hinting to stri
 
 - https://tilastokeskus.fi/ajk/verkkosivu-uudistus/uudistuksen-vaikutukset-statfin-tietokantaan.html
 - Dokumentaation: https://statfin.stat.fi/api1.html
+- https://stat.fi/tup/alue/kuntienavainluvut.html#?year=2021&active1=SSS
 
 Vanhat linkit:
 
