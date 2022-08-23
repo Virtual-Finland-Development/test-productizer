@@ -53,6 +53,10 @@ class StatFinFiguresResponse(BaseModel):
 
 
 class StatFinPopulationDataProductInput(BaseModel):
+    """
+    The data product input syntax
+    """
+
     city_query: Optional[str] = ""
     year: Optional[int] = 2021
 
@@ -62,8 +66,8 @@ class StatFinPopulationDataProductInput(BaseModel):
 #
 class StatFinPopulationDataProduct(BaseModel):
     """
-    The syntax for the output item
-    --> The data product syntax"""
+    The data product output syntax
+    """
 
     label: str
     source: str
@@ -140,8 +144,13 @@ async def resolve_api_code_for_area(city_query: str, year: int, locale: str) -> 
             index = city_names.index(city_name)
             API_code_for_area = figure_variables.values[index]
         else:
+            error_message = f"City '{city_query}' not found"
+
             suggestions = list(filter(lambda city_name: city_name.lower().__contains__(search_phrase), city_names))
-            raise ValueError(f"City {city_query} not found: try one of {suggestions}")
+            if len(suggestions) > 0:
+                error_message = f"{error_message}, try one of {suggestions}"
+
+            raise ValueError(error_message)
 
     return API_code_for_area
 

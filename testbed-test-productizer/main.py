@@ -33,9 +33,15 @@ async def root():
     response_model=StatFinPopulationDataProduct,
 )
 async def population(
-    city_query: str = "", year: int = 2021, request: Optional[StatFinPopulationDataProductInput] = None
+    city_query: Optional[str] = None,
+    year: Optional[int] = None,
+    request: Optional[StatFinPopulationDataProductInput] = None,
 ):
     try:
+
+        #
+        # Merge request query params and body
+        #
         params = {
             "city_query": city_query,
             "year": year,
