@@ -21,6 +21,7 @@ class Request(RequestRequiredParts, total=False):
     params: Optional[RequestParams]
     data: Optional[RequestData]
     headers: Optional[RequestHeaders]
+    json: Optional[bool]  # = True
 
 
 async def fetch(
@@ -91,7 +92,7 @@ class Requester(Generic[T]):
     ) -> T:
         if request is None:
             raise Exception("Request input not defined")
-        return await self.fetchJSON(**request)
+        return await self.exec_fetch(**request)
 
     #
     # Utils
@@ -114,39 +115,49 @@ class Requester(Generic[T]):
     #
     # Request actuator
     #
-    async def fetchJSON(
+    async def exec_fetch(
         self,
         url: str,
         method: Optional[KnownRequestMethods] = None,
         params: Optional[RequestParams] = None,
         data: Optional[RequestData] = None,
         headers: Optional[RequestHeaders] = None,
+        json: Optional[bool] = None,
     ) -> T:
-
         # https://github.com/aio-libs/aiohttp/issues/5975
         orjson_wrapped: Callable[[Any], str] = lambda i: (orjson.dumps(i).decode())
 
-        opts = omit_empty_dict_attributes(
-            {
-                "params": params,
-                "json": data,
-                "headers": ensure_json_content_type_header(headers),
-                "skip_auto_headers": ["user-agent"],
-                "allow_redirects": False,
-                # "compress": True,
-                "timeout": 30.0,
-            }
-        )
+        # Prep opts
+        if json is None:
+            json = True
+
+        opts = {
+            "params": params,
+            "skip_auto_headers": ["user-agent"],
+            "allow_redirects": False,
+            # "compress": True,
+            "timeout": 30.0,
+        }
+        if json:
+            opts["json"] = data
+            opts["headers"] = ensure_json_content_type_header(headers)
+        else:
+            opts["body"] = data
+            opts["headers"] = headers
+
+        options = omit_empty_dict_attributes(opts)
 
         request_method = method.upper() if method is not None else "GET"
 
         async with aiohttp.ClientSession(json_serialize=orjson_wrapped) as session:
-            async with session.request(request_method, url, **opts) as res:
+            async with session.request(request_method, url, **options) as res:
                 async with res:
                     if res.status == 200:
                         try:
-                            result = await res.json(loads=orjson.loads)
-                            return self.format_result(result)
+                            if json:
+                                result = await res.json(loads=orjson.loads)
+                                return self.format_result(result)
+                            return await res.text()  # type: ignore
                         except Exception as e:
                             raise self.prepare_expection(e)
                     else:
