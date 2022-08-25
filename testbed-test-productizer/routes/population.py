@@ -8,8 +8,8 @@ from typing import Optional
 
 
 @router.post(
-    "/test/undefined/population",
-    summary="test/undefined/population Data Product",
+    "/test/Figure/Population",
+    summary="test/Figure/Population Data Product",
     description="A test Data Product for the population query",
     response_model=StatFinPopulationDataProduct,
 )
