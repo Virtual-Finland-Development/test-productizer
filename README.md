@@ -6,6 +6,10 @@ A simple test testbed-productizer app
 
 An example environment for setting up a data source for the use of the testbed dataspace.
 
+![test-productizer](./docs/test-productizer.drawio.png)
+
+_Figure: current state of the productizer data flow_
+
 ## Running the app
 
 ### Run locally with docker
