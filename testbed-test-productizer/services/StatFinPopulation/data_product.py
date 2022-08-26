@@ -24,7 +24,11 @@ class PopulationDataProductResponse(DataspaceableModel):
     The data product output syntax
     """
 
-    description: str = Field("", title="Data description")
-    source_name: str = Field("", title="Data source name")
-    population: int = Field(..., title="The population value")
-    updated_at: datetime = Field("", title="Data updated at datetime")
+    description: str = Field("", title="Data description", example="Väkiluku, KOKO MAA, 2021")
+    source_name: str = Field("", title="Data source name", example="Tilastokeskus")
+    population: int = Field(..., title="The population value", example=5548241)
+    updated_at: datetime = Field(
+        "",
+        title="Datetime the data was last updated at. A datetime in RFC3339 date-time syntax",
+        example="2022-06-17T11:52:00Z",
+    )
