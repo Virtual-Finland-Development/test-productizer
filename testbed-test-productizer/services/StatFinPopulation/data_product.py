@@ -1,11 +1,12 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from datetime import datetime
+from ...utils.models import CamelCaseModel
 
 #
 # Data product models
 # @see: https://github.com/Virtual-Finland/definitions/blob/main/src/test/lsipii/Figure/Population.py
 #
-class PopulationDataProductRequest(BaseModel):
+class PopulationDataProductRequest(CamelCaseModel):
     """
     The data product input syntax
     """
@@ -18,7 +19,7 @@ class PopulationDataProductRequest(BaseModel):
     year: int = Field(2021, title="Year")
 
 
-class PopulationDataProductResponse(BaseModel):
+class PopulationDataProductResponse(CamelCaseModel):
     """
     The data product output syntax
     """
