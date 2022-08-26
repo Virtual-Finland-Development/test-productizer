@@ -1,4 +1,5 @@
 from typing import Dict, Any, Optional
+from datetime import datetime, timezone
 
 
 def omit_empty_dict_attributes(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -26,3 +27,15 @@ def ensure_dict(data: Any, allow_empty: bool = True) -> Dict[str, Any]:
     if allow_empty:
         return {}
     raise ValueError("Data must be a dict")
+
+
+#
+# Datetime transformers
+# @see: https://stackoverflow.com/a/68198142
+#
+def convert_datetime_to_iso_8601_with_z_suffix(dt: datetime) -> str:
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def transform_to_utc_datetime(dt: datetime) -> datetime:
+    return dt.astimezone(tz=timezone.utc)

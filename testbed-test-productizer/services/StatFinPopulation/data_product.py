@@ -1,12 +1,12 @@
 from pydantic import Field
 from datetime import datetime
-from ...utils.models import CamelCaseModel
+from ...utils.models import DataspaceableModel
 
 #
 # Data product models
 # @see: https://github.com/Virtual-Finland/definitions/blob/main/src/test/lsipii/Figure/Population.py
 #
-class PopulationDataProductRequest(CamelCaseModel):
+class PopulationDataProductRequest(DataspaceableModel):
     """
     The data product input syntax
     """
@@ -19,7 +19,7 @@ class PopulationDataProductRequest(CamelCaseModel):
     year: int = Field(2021, title="Year")
 
 
-class PopulationDataProductResponse(CamelCaseModel):
+class PopulationDataProductResponse(DataspaceableModel):
     """
     The data product output syntax
     """
