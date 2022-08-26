@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Callable
 from ...utils.Requester import fetch
-from .api_interface import StatFinFiguresResponse, StatFinPopulationResponse
+from .data_source_api_models import StatFinFiguresResponse, StatFinPopulationResponse
 from .data_product import PopulationDataProductResponse, PopulationDataProductRequest
 from dateutil import parser as date_parser
 
