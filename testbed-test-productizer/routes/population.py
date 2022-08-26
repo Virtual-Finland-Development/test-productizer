@@ -14,7 +14,7 @@ from typing import Optional
     response_model=StatFinPopulationDataProduct,
 )
 async def population(
-    city_query: Optional[str] = None,
+    city: Optional[str] = None,
     year: Optional[int] = None,
     request: Optional[StatFinPopulationDataProductInput] = None,
 ):
@@ -24,7 +24,7 @@ async def population(
         # Merge request query params and body
         #
         params = {
-            "city_query": city_query,
+            "city": city,
             "year": year,
         }
         if request is not None:
@@ -33,7 +33,7 @@ async def population(
                 if entry in request_fields and bool(request_fields[entry]):
                     params[entry] = request_fields[entry]
 
-        return await get_population(**params)
+        return await get_population(StatFinPopulationDataProductInput.parse_obj(params))
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=str(e))
     except ValueError as e:

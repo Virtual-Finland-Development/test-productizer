@@ -1,6 +1,7 @@
-from typing import List, Dict, Any, Optional, Callable
-from pydantic import BaseModel
-from ..utils.Requester import fetch
+from typing import Callable
+from ...utils.Requester import fetch
+from .api_interface import StatFinFiguresResponse, StatFinPopulationResponse
+from .data_product import StatFinPopulationDataProduct, StatFinPopulationDataProductInput
 
 """
 The data source endpoint URL
@@ -12,79 +13,18 @@ get_api_endpoint: Callable[
 )
 
 #
-# External API response item model(s)
-#
-class StatFinPopulationResponseDimensionsCategory(BaseModel):
-    index: Dict[str, str]
-    label: Dict[str, str]
-    unit: Optional[Dict[str, Dict[str, Any]]]
-
-
-class StatFinPopulationResponseDimensions(BaseModel):
-    label: str
-    category: StatFinPopulationResponseDimensionsCategory
-
-
-class StatFinPopulationResponse(BaseModel):
-    """
-    The expected structure of the data sources item in the external API response
-    --> The data source syntax"""
-
-    label: str
-    source: str
-    updated: str
-    dimension: Dict[str, StatFinPopulationResponseDimensions]
-    id: List[str]
-    size: List[int]
-    value: List[int]  # the result should be in value[0]
-    version: str
-
-
-class StatFinFiguresResponseVariables(BaseModel):
-    code: str
-    text: str
-    values: List[str]
-    valueTexts: List[str]
-
-
-class StatFinFiguresResponse(BaseModel):
-    title: str
-    variables: List[StatFinFiguresResponseVariables]
-
-
-class StatFinPopulationDataProductInput(BaseModel):
-    """
-    The data product input syntax
-    """
-
-    city_query: Optional[str] = ""
-    year: Optional[int] = 2021
-
-
-#
-# Output item model(s)
-#
-class StatFinPopulationDataProduct(BaseModel):
-    """
-    The data product output syntax
-    """
-
-    label: str
-    source: str
-    value: int
-    updated: str
-
-
-#
 # The request handler
 #
-async def get_population(city_query: str = "", year: int = 2021, locale: str = "fi") -> StatFinPopulationDataProduct:
+async def get_population(request: StatFinPopulationDataProductInput) -> StatFinPopulationDataProduct:
     """
     The getter function for the resources list
     """
+    city = request.city if request.city is not None else ""
+    year = request.year if request.year is not None else 2021
+    locale = "fi"
 
     resource_url = get_api_endpoint(locale)
-    API_code_for_area = await resolve_api_code_for_area(city_query, year, locale)
+    API_code_for_area = await resolve_api_code_for_area(city, locale)
     API_code_for_population_search = "M411"
 
     # Fetch items from the external data source API
@@ -118,14 +58,14 @@ async def get_population(city_query: str = "", year: int = 2021, locale: str = "
     )
 
 
-async def resolve_api_code_for_area(city_query: str, year: int, locale: str) -> str:
+async def resolve_api_code_for_area(city: str, locale: str) -> str:
     """
     Resolves the API code for the area
     """
 
     API_code_for_area = "SSS"  # Defaut: all areas
-    if len(city_query) > 0:
-        search_phrase = city_query.lower().strip()
+    if len(city) > 0:
+        search_phrase = city.lower().strip()
         resource_url = get_api_endpoint(locale)
 
         figures = await fetch(
@@ -144,7 +84,7 @@ async def resolve_api_code_for_area(city_query: str, year: int, locale: str) -> 
             index = city_names.index(city_name)
             API_code_for_area = figure_variables.values[index]
         else:
-            error_message = f"City '{city_query}' not found"
+            error_message = f"City '{city}' not found"
 
             suggestions = list(filter(lambda city_name: city_name.lower().__contains__(search_phrase), city_names))
             if len(suggestions) > 0:
