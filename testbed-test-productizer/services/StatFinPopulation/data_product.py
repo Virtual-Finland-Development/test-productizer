@@ -2,9 +2,10 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 #
-# Data models
+# Data product models
+# @see: https://github.com/Virtual-Finland/definitions/blob/main/src/test/lsipii/Figure/Population.py
 #
-class StatFinPopulationDataProductInput(BaseModel):
+class PopulationDataProductRequest(BaseModel):
     """
     The data product input syntax
     """
@@ -17,7 +18,7 @@ class StatFinPopulationDataProductInput(BaseModel):
     year: int = Field(2021, title="Year")
 
 
-class StatFinPopulationDataProduct(BaseModel):
+class PopulationDataProductResponse(BaseModel):
     """
     The data product output syntax
     """

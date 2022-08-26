@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Callable
 from ...utils.Requester import fetch
 from .api_interface import StatFinFiguresResponse, StatFinPopulationResponse
-from .data_product import StatFinPopulationDataProduct, StatFinPopulationDataProductInput
+from .data_product import PopulationDataProductResponse, PopulationDataProductRequest
 from dateutil import parser as date_parser
 
 """
@@ -17,7 +17,7 @@ get_api_endpoint: Callable[
 #
 # The request handler
 #
-async def get_population(request: StatFinPopulationDataProductInput) -> StatFinPopulationDataProduct:
+async def get_population(request: PopulationDataProductRequest) -> PopulationDataProductResponse:
     """
     The getter function for the resources list
     """
@@ -54,7 +54,7 @@ async def get_population(request: StatFinPopulationDataProductInput) -> StatFinP
     )
 
     # Transform and return response items to data product syntax
-    return StatFinPopulationDataProduct(
+    return PopulationDataProductResponse(
         description=format_data_product_description(item, year),
         source_name=item.source,
         population=item.value[0],
