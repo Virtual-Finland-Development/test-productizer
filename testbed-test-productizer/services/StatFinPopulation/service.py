@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import Callable
 from ...utils.Requester import fetch
 from .api_interface import StatFinFiguresResponse, StatFinPopulationResponse
 from .data_product import StatFinPopulationDataProduct, StatFinPopulationDataProductInput
+from dateutil import parser as date_parser
 
 """
 The data source endpoint URL
@@ -54,7 +56,10 @@ async def get_population(request: StatFinPopulationDataProductInput) -> StatFinP
 
     # Transform and return response items to data product syntax
     return StatFinPopulationDataProduct(
-        label=format_data_product_label(item, year), source=item.source, value=item.value[0], updated=item.updated
+        description=format_data_product_description(item, year),
+        source_name=item.source,
+        population=item.value[0],
+        updated_at=format_data_product_updated_at(item.updated),
     )
 
 
@@ -95,7 +100,12 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
     return API_code_for_area
 
 
-def format_data_product_label(item: StatFinPopulationResponse, year: int) -> str:
+#
+# Formatters
+#
+
+
+def format_data_product_description(item: StatFinPopulationResponse, year: int) -> str:
     """
     Formats the data product label
     """
@@ -103,3 +113,11 @@ def format_data_product_label(item: StatFinPopulationResponse, year: int) -> str
     first_dimension_category_label = list(dimensions[0].category.label.values())[0]
     second_dimension_label = list(dimensions[1].category.label.values())[0]
     return f"{second_dimension_label}, {first_dimension_category_label}, {year}"
+
+
+def format_data_product_updated_at(updated: str) -> datetime:
+    """
+    2022-06-17T11.52.00Z -> 2022-06-17T11:52:00Z -> datetime
+    """
+    corrected_syntax = updated.replace(".", ":") if updated.count(".") == 2 else updated
+    return date_parser.parse(corrected_syntax)
