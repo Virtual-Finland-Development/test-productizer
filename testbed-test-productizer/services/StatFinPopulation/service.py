@@ -50,8 +50,7 @@ async def get_population(request: StatFinPopulationDataProductInput) -> StatFinP
                 "response": {"format": "json-stat2"},
             },
         },
-        response_type=StatFinPopulationResponse,  # for type hinting
-        formatter=StatFinPopulationResponse.parse_obj,  # also validates the response
+        formatter=StatFinPopulationResponse,  # ensure correct pydantic output
     )
 
     # Transform and return response items to data product syntax
@@ -73,12 +72,10 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
         search_phrase = city.lower().strip()
         resource_url = get_api_endpoint(locale)
 
-        figures = await fetch(
-            {"url": resource_url},
-            response_type=StatFinFiguresResponse,
-            formatter=StatFinFiguresResponse.parse_obj,  # validates the response
-        )
+        # Fetch figures for city code resolving
+        figures = await fetch(request={"url": resource_url}, formatter=StatFinFiguresResponse)
 
+        # Resolve city code
         figure_variables = list(figures.variables)[0]
         if len(figure_variables.values) != len(figure_variables.valueTexts):
             raise ValueError("Invalid city fiqures received")

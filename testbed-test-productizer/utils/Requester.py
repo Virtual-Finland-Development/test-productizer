@@ -1,4 +1,4 @@
-from typing import Dict, Any, Literal, Type, TypeVar, Generic, TypedDict, Optional, Union, Callable
+from typing import Dict, Any, Literal, TypeVar, Generic, TypedDict, Optional, Union, Callable, Type
 import orjson
 import aiohttp
 from .helpers import ensure_json_content_type_header, omit_empty_dict_attributes
@@ -26,12 +26,23 @@ class Request(RequestRequiredParts, total=False):
 
 async def fetch(
     request: Request,
-    response_type: Union[Type[T], Any] = Any,
     name: str = "Data fetcher",
-    formatter: Optional[Callable[[T], Any]] = None,
+    formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None,
 ) -> T:
-    """A wrapper for requester"""
-    requester = Requester[response_type](name, request, formatter)
+    """
+    A type-keen data fetcher
+
+    @examples:
+    response: Any = await fetch(
+        {"url": resource_url"},
+    )
+
+    response = await fetch(
+        {"url": resource_url", "method": "POST", "data": {"id": "abc123"}},
+        formatter: PydanticBaseModel
+    )
+    """
+    requester = Requester[T](name, request, formatter)
     items = await requester.fetch()
     return items
 
@@ -42,9 +53,11 @@ class Requester(Generic[T]):
 
     requester_name: str
     request_input: Optional[Request]
-    formatter: Optional[Callable[[T], Any]] = None
+    formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None
 
-    def __init__(self, name: str, request: Optional[Request], formatter: Optional[Callable[[T], Any]] = None) -> None:
+    def __init__(
+        self, name: str, request: Optional[Request], formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None
+    ) -> None:
         self.requester_name = name
         self.request_input = request
         self.formatter = formatter
@@ -106,10 +119,10 @@ class Requester(Generic[T]):
             return exception
         return ValueError(f"{errorMessagePrefix}{exception}")
 
-    def format_result(self, result: T) -> T:
+    def format_result(self, result: Any) -> T:
         """Validate & format result if formatter is defined"""
         if callable(self.formatter):
-            return self.formatter(result)
+            return self.formatter(**result)  # type: ignore
         return result
 
     #
