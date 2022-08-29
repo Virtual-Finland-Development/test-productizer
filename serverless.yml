@@ -15,10 +15,6 @@ plugins:
 custom:
   pythonRequirements:
     dockerImage: public.ecr.aws/sam/build-python3.9:latest
-    dockerizePip: true
-    usePoetry: true
-    slim: true
-    layer: true
 functions:
   app:
     package:
