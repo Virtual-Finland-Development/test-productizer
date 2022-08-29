@@ -26,9 +26,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           make install
-      - name: Run lint check
+      - name: Run lint check with black
         run: |
-          make lint
+          make lint-check
       - name: Test with pytest
         run: |
           make test

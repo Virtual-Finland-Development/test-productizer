@@ -11,4 +11,6 @@ dev:
 test:
 	poetry run pytest
 lint:
+	poetry run black ./productizer
+lint-check:
 	poetry run black ./productizer --check
