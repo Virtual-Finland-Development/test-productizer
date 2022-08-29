@@ -30,11 +30,11 @@ functions:
         - "!.venv/**"
         - "!node_modules/**"
     handler: productizer.main.handler
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
     environment:
       STAGE: ${self:provider.stage}
     events:
       - http:
           method: any
           path: /{proxy+}
-      - layers:
-          - Ref: PythonRequirementsLambdaLayer
