@@ -37,7 +37,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-        run: npm ci
+      - run: npm ci
       # deploy!
       # https://github.com/serverless/github-action
       - name: Deploy with serverless framework
