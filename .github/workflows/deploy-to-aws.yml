@@ -14,7 +14,7 @@ jobs:
   use-build-and-test:
     # adapt to point to the current repo
     # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#calling-a-reusable-workflow
-    uses: Virtual-Finland-Development/testbed-test-productizer/.github/workflows/use-build-and-test.yml@main
+    uses: Virtual-Finland-Development/testbed-test-productizer/.github/workflows/build-and-test.yml@main
     # that's all - jobs that call a reusable workflow can do nothing else
 
   deploy:
