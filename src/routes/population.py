@@ -2,7 +2,11 @@ from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
-from ..services.StatFinPopulation import PopulationDataProductResponse, PopulationDataProductRequest, get_population
+from src.services.StatFinPopulation import (
+    PopulationDataProductResponse,
+    PopulationDataProductRequest,
+    get_population,
+)
 from pydantic import ValidationError
 
 

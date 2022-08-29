@@ -1,8 +1,14 @@
 from datetime import datetime
 from typing import Callable
-from ...utils.Requester import fetch
-from .data_source_api_models import StatFinFiguresResponse, StatFinPopulationResponse
-from .data_product import PopulationDataProductResponse, PopulationDataProductRequest
+from src.utils.Requester import fetch
+from src.services.StatFinPopulation.data_source_api_models import (
+    StatFinFiguresResponse,
+    StatFinPopulationResponse,
+)
+from src.services.StatFinPopulation.data_product import (
+    PopulationDataProductResponse,
+    PopulationDataProductRequest,
+)
 from dateutil import parser as date_parser
 
 """
@@ -17,7 +23,9 @@ get_api_endpoint: Callable[
 #
 # The request handler
 #
-async def get_population(request: PopulationDataProductRequest) -> PopulationDataProductResponse:
+async def get_population(
+    request: PopulationDataProductRequest,
+) -> PopulationDataProductResponse:
     """
     The getter function for the resources list
     """
@@ -43,9 +51,15 @@ async def get_population(request: PopulationDataProductRequest) -> PopulationDat
                     },
                     {
                         "code": "Tiedot",
-                        "selection": {"filter": "item", "values": [API_code_for_population_search]},
+                        "selection": {
+                            "filter": "item",
+                            "values": [API_code_for_population_search],
+                        },
                     },
-                    {"code": "Vuosi", "selection": {"filter": "item", "values": [year]}},
+                    {
+                        "code": "Vuosi",
+                        "selection": {"filter": "item", "values": [year]},
+                    },
                 ],
                 "response": {"format": "json-stat2"},
             },
@@ -73,7 +87,9 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
         resource_url = get_api_endpoint(locale)
 
         # Fetch figures for city code resolving
-        figures = await fetch(request={"url": resource_url}, formatter=StatFinFiguresResponse)
+        figures = await fetch(
+            request={"url": resource_url}, formatter=StatFinFiguresResponse
+        )
 
         # Resolve city code
         figure_variables = list(figures.variables)[0]
@@ -81,14 +97,22 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
             raise ValueError("Invalid city fiqures received")
 
         city_names = figure_variables.valueTexts
-        city_name = next(filter(lambda city_name: city_name.lower() == search_phrase, city_names), None)
+        city_name = next(
+            filter(lambda city_name: city_name.lower() == search_phrase, city_names),
+            None,
+        )
         if city_name is not None:
             index = city_names.index(city_name)
             API_code_for_area = figure_variables.values[index]
         else:
             error_message = f"City '{city}' not found"
 
-            suggestions = list(filter(lambda city_name: city_name.lower().__contains__(search_phrase), city_names))
+            suggestions = list(
+                filter(
+                    lambda city_name: city_name.lower().__contains__(search_phrase),
+                    city_names,
+                )
+            )
             if len(suggestions) > 0:
                 error_message = f"{error_message}, try one of {suggestions}"
 

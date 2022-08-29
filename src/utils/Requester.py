@@ -1,7 +1,21 @@
-from typing import Dict, Any, Literal, TypeVar, Generic, TypedDict, Optional, Union, Callable, Type
+from typing import (
+    Dict,
+    Any,
+    Literal,
+    TypeVar,
+    Generic,
+    TypedDict,
+    Optional,
+    Union,
+    Callable,
+    Type,
+)
 import orjson
 import aiohttp
-from .helpers import ensure_json_content_type_header, omit_empty_dict_attributes
+from src.utils.helpers import (
+    ensure_json_content_type_header,
+    omit_empty_dict_attributes,
+)
 from pydantic import ValidationError
 
 T = TypeVar("T")
@@ -56,7 +70,10 @@ class Requester(Generic[T]):
     formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None
 
     def __init__(
-        self, name: str, request: Optional[Request], formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None
+        self,
+        name: str,
+        request: Optional[Request],
+        formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None,
     ) -> None:
         self.requester_name = name
         self.request_input = request
@@ -88,7 +105,10 @@ class Requester(Generic[T]):
         )
 
     async def get(
-        self, url: str, params: Optional[RequestParams] = None, headers: Optional[RequestHeaders] = None
+        self,
+        url: str,
+        params: Optional[RequestParams] = None,
+        headers: Optional[RequestHeaders] = None,
     ) -> T:
         return await self.request(
             {

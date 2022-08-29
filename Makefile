@@ -10,3 +10,5 @@ dev:
 	poetry run uvicorn --reload --host 0.0.0.0 ${app}
 test:
 	poetry run pytest
+lint:
+	poetry run black ./src --check

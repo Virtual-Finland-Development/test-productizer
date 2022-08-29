@@ -1,6 +1,6 @@
 from pydantic import Field
 from datetime import datetime
-from ...utils.models import DataspaceableModel
+from src.utils.models import DataspaceableModel
 
 #
 # Data product models
@@ -24,7 +24,9 @@ class PopulationDataProductResponse(DataspaceableModel):
     The data product output syntax
     """
 
-    description: str = Field("", title="Data description", example="Väkiluku, KOKO MAA, 2021")
+    description: str = Field(
+        "", title="Data description", example="Väkiluku, KOKO MAA, 2021"
+    )
     source_name: str = Field("", title="Data source name", example="Tilastokeskus")
     population: int = Field(..., title="The population value", example=5548241)
     updated_at: datetime = Field(
