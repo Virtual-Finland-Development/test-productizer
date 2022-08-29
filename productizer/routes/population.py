@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
-from src.services.StatFinPopulation import (
+from productizer.services.StatFinPopulation import (
     PopulationDataProductResponse,
     PopulationDataProductRequest,
     get_population,

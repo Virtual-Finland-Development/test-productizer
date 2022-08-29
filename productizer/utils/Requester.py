@@ -12,7 +12,7 @@ from typing import (
 )
 import orjson
 import aiohttp
-from src.utils.helpers import (
+from productizer.utils.helpers import (
     ensure_json_content_type_header,
     omit_empty_dict_attributes,
 )

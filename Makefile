@@ -1,4 +1,4 @@
-app = "src.main:app"
+app = "productizer.main:app"
 
 install:
 	python -m pip install poetry
@@ -11,4 +11,4 @@ dev:
 test:
 	poetry run pytest
 lint:
-	poetry run black ./src --check
+	poetry run black ./productizer --check

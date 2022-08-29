@@ -1,11 +1,13 @@
 from fastapi.testclient import TestClient
-from src.main import app
+from productizer.main import app
 
 client = TestClient(app)
 
 
 def test_population():
-    response = client.post("/test/Figure/Population", json={"city": "Tampere", "year": 2021})
+    response = client.post(
+        "/test/Figure/Population", json={"city": "Tampere", "year": 2021}
+    )
     assert response.status_code == 200
 
     # Check all expected keys found in the response

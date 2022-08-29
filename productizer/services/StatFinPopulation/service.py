@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Callable
-from src.utils.Requester import fetch
-from src.services.StatFinPopulation.data_source_api_models import (
+from productizer.utils.Requester import fetch
+from productizer.services.StatFinPopulation.data_source_api_models import (
     StatFinFiguresResponse,
     StatFinPopulationResponse,
 )
-from src.services.StatFinPopulation.data_product import (
+from productizer.services.StatFinPopulation.data_product import (
     PopulationDataProductResponse,
     PopulationDataProductRequest,
 )

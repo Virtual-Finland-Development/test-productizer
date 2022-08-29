@@ -1,6 +1,6 @@
 from pydantic import Field
 from datetime import datetime
-from src.utils.models import DataspaceableModel
+from productizer.utils.models import DataspaceableModel
 
 #
 # Data product models
