@@ -2,6 +2,8 @@
 
 A simple test testbed-productizer app
 
+![Build](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/python-app.yml/badge.svg)
+
 ## Description
 
 An example environment for setting up a data source for the use of the testbed dataspace.
