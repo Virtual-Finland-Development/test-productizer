@@ -11,8 +11,8 @@ from pydantic import ValidationError
 
 
 @router.post(
-    "/test/Figure/Population",
-    summary="test/Figure/Population Data Product",
+    "/test/lsipii/Figure/Population",
+    summary="test/lsipii/Figure/Population Data Product",
     description="A test Data Product for the population query",
     response_model=PopulationDataProductResponse,
 )

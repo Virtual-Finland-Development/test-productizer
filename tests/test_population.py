@@ -6,7 +6,7 @@ client = TestClient(app)
 
 def test_population():
     response = client.post(
-        "/test/Figure/Population", json={"city": "Tampere", "year": 2021}
+        "/test/lsipii/Figure/Population", json={"city": "Tampere", "year": 2021}
     )
     assert response.status_code == 200
 
