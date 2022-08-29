@@ -15,6 +15,9 @@ plugins:
 custom:
   pythonRequirements:
     dockerImage: public.ecr.aws/sam/build-python3.9:latest
+    layer: true
+    slim: true
+
 functions:
   app:
     package:
@@ -33,3 +36,5 @@ functions:
       - http:
           method: any
           path: /{proxy+}
+      - layers:
+          - Ref: PythonRequirementsLambdaLayer
