@@ -19,15 +19,14 @@ custom:
 functions:
   app:
     package:
-      include:
-        - "productizer/main.py"
-      exclude:
-        - "requirements.txt"
-        - "package.json"
-        - "package-lock.json"
-        - ".serverless/**"
-        - ".virtualenv/**"
-        - "node_modules/**"
+      patterns:
+        - "productizer/**"
+        - "!requirements.txt"
+        - "!package.json"
+        - "!package-lock.json"
+        - "!.serverless/**"
+        - "!.venv/**"
+        - "!node_modules/**"
     handler: main.handler
     environment:
       STAGE: ${self:provider.stage}

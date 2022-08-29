@@ -8,7 +8,7 @@
     "test": "tests"
   },
   "scripts": {
-    "deploy": "serverless deploy --stage dev"
+    "deploy": "serverless deploy --stage dev --verbose"
   },
   "repository": {
     "type": "git",
