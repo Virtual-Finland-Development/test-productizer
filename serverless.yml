@@ -30,7 +30,7 @@ functions:
         - "!.serverless/**"
         - "!.venv/**"
         - "!node_modules/**"
-    handler: main.handler
+    handler: productizer.main.handler
     environment:
       STAGE: ${self:provider.stage}
     events:
