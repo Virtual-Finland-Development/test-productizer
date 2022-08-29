@@ -1,9 +1,20 @@
+import os
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
+
 from .routes import base, population
 
-app = FastAPI(default_response_class=ORJSONResponse)
+# Lambda stage path prefix setup
+stage = os.environ.get("STAGE", None)
+openapi_prefix = f"/{stage}" if stage else "/"
+
+app = FastAPI(
+    title="Test productizer",
+    root_path=openapi_prefix,
+    default_response_class=ORJSONResponse,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,3 +26,5 @@ app.add_middleware(
 
 app.include_router(base.router)
 app.include_router(population.router)
+
+handler = Mangum(app)

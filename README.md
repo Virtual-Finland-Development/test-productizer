@@ -29,7 +29,7 @@ _Figure: current state of the productizer data flow_
 
 #### Requirements
 
-- python >= 3.10
+- python >= 3.9
 - python-pip
 - make
 
@@ -60,7 +60,7 @@ When developmenting with a vscode editor, switch the python type-hinting to stri
 ### References
 
 - https://tilastokeskus.fi/ajk/verkkosivu-uudistus/uudistuksen-vaikutukset-statfin-tietokantaan.html
-- Dokumentaation: https://statfin.stat.fi/api1.html
+- Dokumentaatio: https://statfin.stat.fi/api1.html
 - https://stat.fi/tup/alue/kuntienavainluvut.html#?year=2021&active1=SSS
 
 Vanhat linkit:

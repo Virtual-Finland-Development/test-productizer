@@ -1,0 +1,37 @@
+service: test-productizer
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: eu-north-1
+  stage: ${opt:stage, "dev"}
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    usePoetry: true
+functions:
+  app:
+    package:
+      include:
+        - "productizer/main.py"
+      exclude:
+        - "requirements.txt"
+        - "package.json"
+        - "package-lock.json"
+        - ".serverless/**"
+        - ".virtualenv/**"
+        - "node_modules/**"
+    handler: main.handler
+    environment:
+      STAGE: ${self:provider.stage}
+    events:
+      - http:
+          method: any
+          path: /{proxy+}

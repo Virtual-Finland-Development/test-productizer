@@ -1,0 +1,27 @@
+{
+  "name": "testbed-test-productizer",
+  "version": "1.0.0",
+  "description": "A simple test testbed-productizer app",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "deploy": "serverless deploy --stage dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Virtual-Finland-Development/testbed-test-productizer.git"
+  },
+  "author": "",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/Virtual-Finland-Development/testbed-test-productizer/issues"
+  },
+  "homepage": "https://github.com/Virtual-Finland-Development/testbed-test-productizer#readme",
+  "dependencies": {
+    "serverless": "^3.22.0",
+    "serverless-python-requirements": "^5.4.0"
+  }
+}
