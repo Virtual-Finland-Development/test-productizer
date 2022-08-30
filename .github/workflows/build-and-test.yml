@@ -39,13 +39,3 @@ jobs:
       - name: Test with pytest
         run: |
           make test
-      - name: Build artifact
-        run: |
-          make build
-      - name: Upload artifact
-        # https://github.com/actions/upload-artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifact
-          path: dist
-          retention-days: 1

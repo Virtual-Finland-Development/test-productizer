@@ -21,15 +21,7 @@ jobs:
       matrix:
         node-version: [16.x]
     steps:
-      - name: Download the build artifact
-        # https://github.com/actions/download-artifact
-        uses: actions/download-artifact@v3
-        with:
-          # the same name as used in the build workflow
-          name: build-artifact
-          # where to save the artifact
-          # using the same path as in the build workflow "restores" the state from the end of the build workflow
-          path: dist
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
