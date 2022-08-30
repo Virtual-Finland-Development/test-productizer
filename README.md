@@ -2,16 +2,26 @@
 
 A simple test testbed-productizer app
 
-![Build](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/build-and-test.yml/badge.svg)
+![Build](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/build-and-test.yml/badge.svg?branch=main)
 ![Deploy](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/productizer-deploy.yml/badge.svg)
 
 ## Description
 
 An example environment for setting up a data source for the use of the testbed dataspace.
 
+The current data flow between the front-end app and the produtizer API:
+
 ![test-productizer](./docs/test-productizer.drawio.png)
 
 _Figure: current state of the productizer data flow_
+
+Example dataflow that describes how the testbed-gateway might be used in an App:
+
+![test-productizer-testbed](./docs/test-productizer-testbed.drawio.png)
+
+_Figure: planned state of the productizer data flow_
+
+Read more from the front app data requesting from ioxio.com/guides: [Requesting the data from a data source](https://ioxio.com/guides/how-to-build-an-application#requesting-the-data-from-a-data-source)
 
 ## Running the app
 
