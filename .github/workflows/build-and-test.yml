@@ -5,6 +5,8 @@
 name: Build and test
 
 on:
+  schedule:
+    - cron: "1 11 * * *"
   # support calling this workflow from other workflows
   # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#creating-a-reusable-workflow
   workflow_call:
