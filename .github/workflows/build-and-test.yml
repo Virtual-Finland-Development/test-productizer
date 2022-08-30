@@ -1,0 +1,51 @@
+# This workflow will install Python dependencies, run tests, lint and upload an artifact for the deployment phase
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# And for the deployment flow: https://www.viget.com/articles/automating-build-deploy-ci-cd-with-github-actions/
+
+name: Build and test
+
+on:
+  # support calling this workflow from other workflows
+  # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#creating-a-reusable-workflow
+  workflow_call:
+  # support running this workflow on push events
+  # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          make install
+      - name: Run lint check with black
+        run: |
+          make lint-check
+      - name: Test with pytest
+        run: |
+          make test
+      - name: Build artifact
+        run: |
+          make build
+      - name: Upload artifact
+        # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: dist
+          retention-days: 1

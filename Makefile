@@ -14,3 +14,5 @@ lint:
 	poetry run black ./productizer
 lint-check:
 	poetry run black ./productizer --check
+build:
+	poetry build

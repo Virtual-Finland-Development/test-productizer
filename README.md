@@ -2,7 +2,8 @@
 
 A simple test testbed-productizer app
 
-![Build and deploy](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/build-and-deploy.yml/badge.svg)
+![Build](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/build-and-test.yml/badge.svg)
+![Deploy](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/productizer-deploy.yml/badge.svg)
 
 ## Description
 

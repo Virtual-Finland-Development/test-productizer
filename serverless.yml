@@ -21,14 +21,7 @@ custom:
 functions:
   app:
     package:
-      patterns:
-        - "productizer/**"
-        - "!requirements.txt"
-        - "!package.json"
-        - "!package-lock.json"
-        - "!.serverless/**"
-        - "!.venv/**"
-        - "!node_modules/**"
+      artifact: dist/productizer-0.1.0.tar.gz
     handler: productizer.main.handler
     layers:
       - Ref: PythonRequirementsLambdaLayer
