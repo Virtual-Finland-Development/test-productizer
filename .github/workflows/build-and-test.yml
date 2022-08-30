@@ -8,6 +8,7 @@ on:
   # support calling this workflow from other workflows
   # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#creating-a-reusable-workflow
   workflow_call:
+  workflow_dispatch:
   # support running this workflow on push events
   # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
   push:
