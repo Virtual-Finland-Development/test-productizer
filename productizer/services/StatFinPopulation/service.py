@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Callable
-from productizer.utils.Requester import fetch
+from productizer.utils.Requester import RequesterResponseParsingException, fetch
 from productizer.services.StatFinPopulation.data_source_api_models import (
     StatFinFiguresResponse,
     StatFinPopulationResponse,
@@ -94,7 +94,9 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
         # Resolve city code
         figure_variables = list(figures.variables)[0]
         if len(figure_variables.values) != len(figure_variables.valueTexts):
-            raise ValueError("Invalid city fiqures received")
+            raise RequesterResponseParsingException(
+                message="Invalid city fiqures received"
+            )
 
         city_names = figure_variables.valueTexts
         city_name = next(
@@ -116,7 +118,7 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
             if len(suggestions) > 0:
                 error_message = f"{error_message}, try one of {suggestions}"
 
-            raise ValueError(error_message)
+            raise RequesterResponseParsingException(message=error_message)
 
     return API_code_for_area
 

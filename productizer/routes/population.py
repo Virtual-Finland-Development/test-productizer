@@ -1,13 +1,11 @@
-from fastapi import APIRouter, HTTPException
-
-router = APIRouter()
-
+from fastapi import APIRouter
 from productizer.services.StatFinPopulation import (
     PopulationDataProductResponse,
     PopulationDataProductRequest,
     get_population,
 )
-from pydantic import ValidationError
+
+router = APIRouter()
 
 
 @router.post(
@@ -19,11 +17,4 @@ from pydantic import ValidationError
 async def population(
     request: PopulationDataProductRequest,
 ):
-    try:
-        return await get_population(request)
-    except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(e))
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return await get_population(request)
