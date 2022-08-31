@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Callable
 from productizer.utils.Requester import RequesterResponseParsingException, fetch
-from productizer.services.StatFinPopulation.data_source_api_models import (
+from productizer.services.StatFinPopulation.models.data_source_api_models import (
     StatFinFiguresResponse,
     StatFinPopulationResponse,
 )
-from productizer.services.StatFinPopulation.data_product import (
+from productizer.services.StatFinPopulation.models.data_product import (
     PopulationDataProductResponse,
     PopulationDataProductRequest,
 )
@@ -80,6 +80,7 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
     """
     Resolves the API code for the area
     """
+    request_identifier = "resolve_api_code_for_area"  # a name for logs
 
     API_code_for_area = "SSS"  # Defaut: all areas
     if len(city) > 0:
@@ -88,14 +89,17 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
 
         # Fetch figures for city code resolving
         figures = await fetch(
-            request={"url": resource_url}, formatter=StatFinFiguresResponse
+            name=request_identifier,
+            request={"url": resource_url},
+            formatter=StatFinFiguresResponse,
         )
 
         # Resolve city code
         figure_variables = list(figures.variables)[0]
         if len(figure_variables.values) != len(figure_variables.valueTexts):
             raise RequesterResponseParsingException(
-                message="Invalid city fiqures received"
+                name=request_identifier,
+                message="Invalid city fiqures received",
             )
 
         city_names = figure_variables.valueTexts
@@ -118,7 +122,9 @@ async def resolve_api_code_for_area(city: str, locale: str) -> str:
             if len(suggestions) > 0:
                 error_message = f"{error_message}, try one of {suggestions}"
 
-            raise RequesterResponseParsingException(message=error_message)
+            raise RequesterResponseParsingException(
+                name=request_identifier, message=error_message
+            )
 
     return API_code_for_area
 

@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from productizer.services.StatFinPopulation import (
-    PopulationDataProductResponse,
+from productizer.services.StatFinPopulation.models.data_product import (
     PopulationDataProductRequest,
-    get_population,
+    PopulationDataProductResponse,
 )
+from productizer.services.StatFinPopulation.service import get_population
 
 router = APIRouter()
 

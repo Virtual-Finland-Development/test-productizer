@@ -45,6 +45,7 @@ class Request(RequestRequiredParts, total=False):
 
 
 class BaseRequesterException(Exception):
+    name: str
     exception: Optional[Exception]
     message: Optional[str]
     status_code: Optional[int]
@@ -52,13 +53,24 @@ class BaseRequesterException(Exception):
 
     def __init__(
         self,
+        name: str,
         exception: Optional[Exception] = None,
         message: Optional[str] = None,
         status_code: Optional[int] = None,
     ):
+        self.name = name
         self.exception = exception
         self.message = message
         self.status_code = status_code
+
+    def __str__(self) -> str:
+        prefix = f"Requester -> {self.name} -> "
+        if self.exception is None:
+            message = self.message or "Error"
+            if self.status_code is not None:
+                message = f"{message}: {self.status_code}"
+            return f"{prefix}{message}"
+        return f"{prefix}{self.exception}"
 
 
 class RequesterResponseParsingException(BaseRequesterException):
@@ -71,7 +83,7 @@ class RequesterResponseException(BaseRequesterException):
 
 
 #
-# Callables
+# Callables, implementations
 #
 
 
@@ -222,9 +234,13 @@ class Requester(Generic[T]):
                                 )  # throws validation errors that must be handled in the upper abstraction
                             return await res.text()  # type: ignore
                         except Exception as e:
-                            raise RequesterResponseParsingException(exception=e)
+                            raise RequesterResponseParsingException(
+                                name=self.requester_name, exception=e
+                            )
                     else:
                         message = await res.text()
                         raise RequesterResponseException(
-                            message=message, status_code=res.status
+                            name=self.requester_name,
+                            message=message,
+                            status_code=res.status,
                         )

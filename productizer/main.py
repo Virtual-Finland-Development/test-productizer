@@ -15,7 +15,7 @@ from .routes import base, population
 
 # Lambda stage path prefix setup
 stage = os.environ.get("STAGE", None)
-openapi_prefix = f"/{stage}" if stage else "/"
+openapi_prefix = f"/{stage}" if stage and stage != "production" else "/"
 
 app = FastAPI(
     title="Test productizer",
@@ -38,7 +38,9 @@ app.include_router(base.router)
 app.include_router(population.router)
 
 #
-# Requester-exception handlers
+# Requester, data source's fetch-exception handlers
+#
+# @see: https://fastapi.tiangolo.com/tutorial/handling-errors/
 #
 @app.exception_handler(BaseRequesterException)  # type: ignore
 async def requester_exception_handler(
@@ -46,7 +48,7 @@ async def requester_exception_handler(
 ):
     return ORJSONResponse(
         status_code=exception.status_code or exception.default_status_code,
-        content={"detail": exception.message or str(exception.exception)},
+        content={"detail": str(exception)},
     )
 
 
