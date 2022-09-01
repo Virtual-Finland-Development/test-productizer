@@ -34,5 +34,6 @@ class LoggingMiddleware:
         self.logger = logger
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        self.logger.info("%s %s", scope["method"], scope["path"])
+        if scope["type"] == "http":
+            self.logger.info("Incoming request: %s %s", scope["method"], scope["path"])
         await self.app(scope, receive, send)

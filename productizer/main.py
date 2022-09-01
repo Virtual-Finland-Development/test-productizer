@@ -1,9 +1,9 @@
-from productizer.utils.logger import LoggingMiddleware  # initializes the logger
 from fastapi import FastAPI, Request as FastAPIRequest
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from logging import getLogger
+from productizer.utils.logger import LoggingMiddleware
 
 from productizer.utils.Requester import BaseRequesterException
 
