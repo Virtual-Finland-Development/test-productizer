@@ -20,6 +20,11 @@ logging_configurator.dictConfig(
         "loggers": {
             "": {  # root logger
                 "handlers": ["default"],
+                "level": "WARNING",
+                "propagate": False,
+            },
+            "productizer.main": {
+                "handlers": ["default"],
                 "level": "INFO",
                 "propagate": False,
             },
