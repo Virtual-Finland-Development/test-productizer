@@ -32,7 +32,7 @@ functions:
         - "!node_modules/**"
     handler: productizer.main.handler
     layers:
-      - !Ref: PythonRequirementsLambdaLayer
+      - Ref: PythonRequirementsLambdaLayer
     environment:
       STAGE: ${self:provider.stage}
     events:
