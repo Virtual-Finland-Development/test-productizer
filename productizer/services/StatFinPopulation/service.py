@@ -76,7 +76,7 @@ async def get_population(
             },
         },
         formatter=StatFinPopulationResponse,  # ensure correct pydantic output
-        exceptions={400: StatFiBadRequestExceptionOverride},
+        exceptions={400: StatFiBadRequestExceptionOverride},  # Translate to 422
     )
 
     # Transform and return response items to data product syntax
