@@ -38,7 +38,7 @@ app.include_router(base.router)
 app.include_router(population.router)
 
 #
-# Requester, data source's fetch-exception handlers
+# Requester: data source's fetch-exception handlers
 #
 # @see: https://fastapi.tiangolo.com/tutorial/handling-errors/
 #

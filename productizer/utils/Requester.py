@@ -45,15 +45,15 @@ class Request(RequestRequiredParts, total=False):
 
 
 class BaseRequesterException(Exception):
-    name: str
-    exception: Optional[Exception]
-    message: Optional[str]
-    status_code: Optional[int]
+    name: Optional[Union[str, Dict[str, Any]]] = None
+    exception: Optional[Exception] = None
+    message: Optional[str] = None
+    status_code: Optional[int] = None
     default_status_code: int = 500
 
     def __init__(
         self,
-        name: str,
+        name: Optional[Union[str, Dict[str, Any]]] = None,
         exception: Optional[Exception] = None,
         message: Optional[str] = None,
         status_code: Optional[int] = None,
@@ -64,7 +64,13 @@ class BaseRequesterException(Exception):
         self.status_code = status_code
 
     def __str__(self) -> str:
-        prefix = f"Requester -> {self.name} -> "
+        prefix = f"Requester -> "
+        if self.name is not None:
+            if isinstance(
+                self.name, dict
+            ):  # if first param is of type dict, ignore the rest
+                return str(self.name)
+            prefix = f"{prefix}{self.name} -> "
         if self.exception is None:
             message = self.message or "Error"
             if self.status_code is not None:
@@ -91,6 +97,7 @@ async def fetch(
     request: Request,
     name: str = "Data fetcher",
     formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None,
+    exceptions: Optional[Dict[int, Type[Exception]]] = None,
 ) -> T:
     """
     A type-keen data fetcher
@@ -105,7 +112,7 @@ async def fetch(
         formatter: PydanticBaseModel
     )
     """
-    requester = Requester[T](name, request, formatter)
+    requester = Requester[T](name, request, formatter, exceptions)
     items = await requester.fetch()
     return items
 
@@ -117,16 +124,19 @@ class Requester(Generic[T]):
     requester_name: str
     request_input: Optional[Request]
     formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None
+    exceptions: Optional[Dict[int, Type[Exception]]] = None
 
     def __init__(
         self,
         name: str,
         request: Optional[Request],
         formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None,
+        exceptions: Optional[Dict[int, Type[Exception]]] = None,
     ) -> None:
         self.requester_name = name
         self.request_input = request
         self.formatter = formatter
+        self.exceptions = exceptions
 
     #
     # Requesting methods
@@ -225,7 +235,8 @@ class Requester(Generic[T]):
         async with aiohttp.ClientSession(json_serialize=orjson_wrapped) as session:
             async with session.request(request_method, url, **options) as res:
                 async with res:
-                    if res.status == 200:
+                    response_status_code = res.status
+                    if response_status_code == 200:
                         try:
                             if json:
                                 result = await res.json(loads=orjson.loads)
@@ -239,8 +250,20 @@ class Requester(Generic[T]):
                             )
                     else:
                         message = await res.text()
+
+                        if (
+                            self.exceptions is not None
+                            and response_status_code in self.exceptions.keys()
+                        ):
+                            raise self.exceptions[response_status_code](
+                                {
+                                    "name": self.requester_name,
+                                    "message": message,
+                                    "status_code": response_status_code,
+                                }
+                            )
                         raise RequesterResponseException(
                             name=self.requester_name,
                             message=message,
-                            status_code=res.status,
+                            status_code=response_status_code,
                         )

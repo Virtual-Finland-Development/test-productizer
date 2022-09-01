@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Callable
+from typing import Any, Callable, Dict
 from productizer.utils.Requester import RequesterResponseParsingException, fetch
 from productizer.services.StatFinPopulation.models.data_source_api_models import (
     StatFinFiguresResponse,
@@ -19,6 +19,17 @@ get_api_endpoint: Callable[
 ] = (
     lambda locale: f"https://statfin.stat.fi/PXWeb/api/v1/{locale}/Kuntien_avainluvut/2021/kuntien_avainluvut_2021_aikasarja.px"
 )
+
+
+class StatFiBadRequestExceptionOverride(RequesterResponseParsingException):
+    """
+    Exception override
+    """
+
+    def __init__(self, name: Dict[str, Any]):
+        self.name = name["name"]
+        self.message = "Resource not found"
+
 
 #
 # The request handler
@@ -65,6 +76,7 @@ async def get_population(
             },
         },
         formatter=StatFinPopulationResponse,  # ensure correct pydantic output
+        exceptions={400: StatFiBadRequestExceptionOverride},
     )
 
     # Transform and return response items to data product syntax
