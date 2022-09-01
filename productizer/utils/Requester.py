@@ -16,10 +16,11 @@ from productizer.utils.helpers import (
     ensure_json_content_type_header,
     omit_empty_dict_attributes,
 )
-from pydantic import ValidationError
 
+#
+# Interfaces & types
+#
 T = TypeVar("T")
-
 KnownRequestMethods = Literal["GET", "POST"]
 RequestParams = Dict[str, Any]
 RequestData = Any
@@ -38,10 +39,65 @@ class Request(RequestRequiredParts, total=False):
     json: Optional[bool]  # = True
 
 
+#
+# Exceptions
+#
+
+
+class BaseRequesterException(Exception):
+    name: Optional[Union[str, Dict[str, Any]]] = None
+    exception: Optional[Exception] = None
+    message: Optional[str] = None
+    status_code: Optional[int] = None
+    default_status_code: int = 500
+
+    def __init__(
+        self,
+        name: Optional[Union[str, Dict[str, Any]]] = None,
+        exception: Optional[Exception] = None,
+        message: Optional[str] = None,
+        status_code: Optional[int] = None,
+    ):
+        self.name = name
+        self.exception = exception
+        self.message = message
+        self.status_code = status_code
+
+    def __str__(self) -> str:
+        prefix = f"Requester -> "
+        if self.name is not None:
+            if isinstance(
+                self.name, dict
+            ):  # if first param is of type dict, ignore the rest
+                return str(self.name)
+            prefix = f"{prefix}{self.name} -> "
+        if self.exception is None:
+            message = self.message or "Error"
+            if self.status_code is not None:
+                message = f"{message}: {self.status_code}"
+            return f"{prefix}{message}"
+        return f"{prefix}{self.exception}"
+
+
+class RequesterResponseParsingException(BaseRequesterException):
+    default_status_code = 422
+    pass
+
+
+class RequesterResponseException(BaseRequesterException):
+    pass
+
+
+#
+# Callables, implementations
+#
+
+
 async def fetch(
     request: Request,
     name: str = "Data fetcher",
     formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None,
+    exceptions: Optional[Dict[int, Type[Exception]]] = None,
 ) -> T:
     """
     A type-keen data fetcher
@@ -56,7 +112,7 @@ async def fetch(
         formatter: PydanticBaseModel
     )
     """
-    requester = Requester[T](name, request, formatter)
+    requester = Requester[T](name, request, formatter, exceptions)
     items = await requester.fetch()
     return items
 
@@ -68,16 +124,19 @@ class Requester(Generic[T]):
     requester_name: str
     request_input: Optional[Request]
     formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None
+    exceptions: Optional[Dict[int, Type[Exception]]] = None
 
     def __init__(
         self,
         name: str,
         request: Optional[Request],
         formatter: Optional[Union[Callable[[Any], T], Type[T]]] = None,
+        exceptions: Optional[Dict[int, Type[Exception]]] = None,
     ) -> None:
         self.requester_name = name
         self.request_input = request
         self.formatter = formatter
+        self.exceptions = exceptions
 
     #
     # Requesting methods
@@ -130,15 +189,6 @@ class Requester(Generic[T]):
     #
     # Utils
     #
-    def prepare_expection(self, exception: Union[Exception, str]) -> Exception:
-        """Prefix expections with requester name"""
-        errorMessagePrefix = f"{self.requester_name}: Error --> "
-        if isinstance(exception, aiohttp.ClientResponseError):
-            return Exception(f"{errorMessagePrefix}{exception.message}")
-        if isinstance(exception, ValidationError):
-            return exception
-        return ValueError(f"{errorMessagePrefix}{exception}")
-
     def format_result(self, result: Any) -> T:
         """Validate & format result if formatter is defined"""
         if callable(self.formatter):
@@ -185,14 +235,35 @@ class Requester(Generic[T]):
         async with aiohttp.ClientSession(json_serialize=orjson_wrapped) as session:
             async with session.request(request_method, url, **options) as res:
                 async with res:
-                    if res.status == 200:
+                    response_status_code = res.status
+                    if response_status_code == 200:
                         try:
                             if json:
                                 result = await res.json(loads=orjson.loads)
-                                return self.format_result(result)
+                                return self.format_result(
+                                    result
+                                )  # throws validation errors that must be handled in the upper abstraction
                             return await res.text()  # type: ignore
                         except Exception as e:
-                            raise self.prepare_expection(e)
+                            raise RequesterResponseParsingException(
+                                name=self.requester_name, exception=e
+                            )
                     else:
-                        text = await res.text()
-                        raise self.prepare_expection(text)
+                        message = await res.text()
+
+                        if (
+                            self.exceptions is not None
+                            and response_status_code in self.exceptions.keys()
+                        ):
+                            raise self.exceptions[response_status_code](
+                                {
+                                    "name": self.requester_name,
+                                    "message": message,
+                                    "status_code": response_status_code,
+                                }
+                            )
+                        raise RequesterResponseException(
+                            name=self.requester_name,
+                            message=message,
+                            status_code=response_status_code,
+                        )
