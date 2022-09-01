@@ -1,25 +1,20 @@
-import os
+from productizer.utils.logger import LoggingMiddleware  # initializes the logger
 from fastapi import FastAPI, Request as FastAPIRequest
 from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
 from mangum import Mangum
+from logging import getLogger
 
 from productizer.utils.Requester import BaseRequesterException
 
 from .routes import base, population
 
+
 #
 # FastAPI app definition
 #
-
-# Lambda stage path prefix setup
-stage = os.environ.get("STAGE", None)
-openapi_prefix = f"/{stage}" if stage and stage != "production" else "/"
-
 app = FastAPI(
     title="Test productizer",
-    root_path=openapi_prefix,
     default_response_class=ORJSONResponse,
 )
 
@@ -30,6 +25,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+#
+# Logging
+#
+logger = getLogger(__name__)
+app.add_middleware(LoggingMiddleware, logger=logger)
 
 #
 # Routes
@@ -46,9 +47,13 @@ app.include_router(population.router)
 async def requester_exception_handler(
     request: FastAPIRequest, exception: BaseRequesterException
 ):
+    status_code = exception.status_code or exception.default_status_code
+    content = {"detail": str(exception)}
+    logger.warning("Exception status code: %d, content: %s", status_code, content)
+
     return ORJSONResponse(
-        status_code=exception.status_code or exception.default_status_code,
-        content={"detail": str(exception)},
+        status_code=status_code,
+        content=content,
     )
 
 
