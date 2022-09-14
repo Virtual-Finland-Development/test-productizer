@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from typing import Union
+from fastapi import APIRouter, Header
 from productizer.services.StatFinPopulation.models.data_product import (
     PopulationDataProductRequest,
     PopulationDataProductResponse,
@@ -16,5 +17,7 @@ router = APIRouter()
 )
 async def population(
     request: PopulationDataProductRequest,
+    Authorization: Union[str, None] = Header(default=None),
 ):
+    print("Authorization: ", Authorization)
     return await get_population(request)
