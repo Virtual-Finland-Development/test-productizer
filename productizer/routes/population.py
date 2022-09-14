@@ -5,6 +5,7 @@ from productizer.services.StatFinPopulation.models.data_product import (
     PopulationDataProductResponse,
 )
 from productizer.services.StatFinPopulation.service import get_population
+from productizer.utils import Authorizator
 
 router = APIRouter()
 
@@ -19,5 +20,5 @@ async def population(
     request: PopulationDataProductRequest,
     Authorization: Union[str, None] = Header(default=None),
 ):
-    print("Authorization: ", Authorization)
+    await Authorizator.authorize(Authorization)  # raises 401 if not authorized
     return await get_population(request)

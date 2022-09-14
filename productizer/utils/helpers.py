@@ -1,5 +1,7 @@
 from typing import Dict, Any, Optional
 from datetime import datetime, timezone
+import base64
+import json
 
 
 def omit_empty_dict_attributes(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -45,3 +47,11 @@ def convert_datetime_to_iso_8601_with_z_suffix(dt: datetime) -> str:
 
 def transform_to_utc_datetime(dt: datetime) -> datetime:
     return dt.astimezone(tz=timezone.utc)
+
+
+def base64_encode(data: Any) -> str:
+    """
+    Encode data to base64 string
+    """
+    text = json.dumps(data) if isinstance(data, dict) else data
+    return base64.b64encode(text.encode("utf-8")).decode("utf-8")

@@ -104,11 +104,11 @@ async def fetch(
 
     @examples:
     response: Any = await fetch(
-        {"url": resource_url"},
+        {"url": resource_url},
     )
 
     response = await fetch(
-        {"url": resource_url", "method": "POST", "data": {"id": "abc123"}},
+        {"url": resource_url, "method": "POST", "data": {"id": "abc123"}},
         formatter: PydanticBaseModel
     )
     """

@@ -35,6 +35,7 @@ functions:
       - Ref: PythonRequirementsLambdaLayer
     environment:
       STAGE: ${self:provider.stage}
+      AUTHORIZATION_GW_ENDPOINT_URL: ${env:AUTHORIZATION_GW_ENDPOINT_URL}
     events:
       - httpApi:
           method: any
