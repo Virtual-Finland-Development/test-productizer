@@ -25,7 +25,9 @@ async def authorize(authorization_header: Union[str, None]) -> None:
             "method": "POST",
             "data": {
                 "appContext": generate_app_context(),
-                "token": authorization_header,
+                "token": authorization_header.lstrip("Bearer ")
+                if authorization_header
+                else "",
             },
         }
     )
