@@ -6,7 +6,7 @@ name: Build and test
 
 on:
   schedule:
-    - cron: "1 11 * * *"
+    - cron: "1 11 * * 2" # automaticly test once a week
   # support calling this workflow from other workflows
   # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#creating-a-reusable-workflow
   workflow_call:
@@ -42,3 +42,10 @@ jobs:
       - name: Test with pytest
         run: |
           make test
+      # preview stac
+      - name: Preview pulumi stack
+        run: |
+          make deploy-pulumi-preview
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          AUTHORIZATION_GW_ENDPOINT_URL: ${{ secrets.AUTHORIZATION_GW_ENDPOINT_URL }}
