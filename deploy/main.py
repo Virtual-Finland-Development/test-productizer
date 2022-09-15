@@ -1,12 +1,11 @@
-import pulumi
 import json
-
-from pulumi_aws_native import lambda_, stepfunctions, iam, config
+import pulumi
+from pulumi_aws import lambda_, sfn as stepfunctions, iam, config
 from productizer.utils.settings import get_setting
 
 lambda_role = iam.Role(
     "lambdaRole",
-    assume_role_policy_document=json.dumps(
+    assume_role_policy=json.dumps(
         {
             "Version": "2012-10-17",
             "Statement": [
@@ -19,10 +18,10 @@ lambda_role = iam.Role(
             ],
         }
     ),
-    policies=[
-        iam.RolePolicyArgs(
-            policy_name="lambdaRolePolicy",
-            policy_document=json.dumps(
+    inline_policies=[
+        iam.RoleInlinePolicyArgs(
+            name="lambdaRolePolicy",
+            policy=json.dumps(
                 {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -44,7 +43,7 @@ lambda_role = iam.Role(
 
 sfn_role = iam.Role(
     "sfnRole",
-    assume_role_policy_document=json.dumps(
+    assume_role_policy=json.dumps(
         {
             "Version": "2012-10-17",
             "Statement": [
@@ -56,10 +55,10 @@ sfn_role = iam.Role(
             ],
         }
     ),
-    policies=[
-        iam.RolePolicyArgs(
-            policy_name="sfnRolePolicy",
-            policy_document=json.dumps(
+    inline_policies=[
+        iam.RoleInlinePolicyArgs(
+            name="sfnRolePolicy",
+            policy=json.dumps(
                 {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -75,12 +74,10 @@ sfn_role = iam.Role(
     ],
 )
 
-
 productizerer_fn = lambda_.Function(
     "productizerer",
     role=lambda_role.arn,
     runtime="python3.9",
-    handler="productizer.main.handler",
     environment=lambda_.FunctionEnvironmentArgs(
         variables={
             "AUTHORIZATION_GW_ENDPOINT_URL": get_setting(
@@ -88,13 +85,14 @@ productizerer_fn = lambda_.Function(
             )
         }
     ),
-    code=pulumi.AssetArchive({"productizer": pulumi.FileArchive("../productizer")}),  # type: ignore
+    code=pulumi.AssetArchive({".": pulumi.FileArchive("./productizer")}),
+    handler="productizer.main.handler",
 )
 
 state_defn = state_machine = stepfunctions.StateMachine(
     "stateMachine",
     role_arn=sfn_role.arn,
-    definition_string=json.dumps(
+    definition=json.dumps(
         {
             "Comment": "Productizerer deployment state machine",
             "StartAt": "Productizerer",

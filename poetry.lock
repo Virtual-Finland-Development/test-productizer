@@ -50,7 +50,7 @@ trio = ["trio (>=0.16)"]
 name = "arpeggio"
 version = "1.10.2"
 description = "Packrat parser interpreter"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -144,7 +144,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "dill"
 version = "0.3.5.1"
 description = "serialize all of python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*"
 
@@ -181,7 +181,7 @@ python-versions = ">=3.7"
 name = "grpcio"
 version = "1.47.0"
 description = "HTTP/2-based RPC framework"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -265,7 +265,7 @@ pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 name = "parver"
 version = "0.3.1"
 description = "Parse and manipulate version numbers."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -323,7 +323,7 @@ dev = ["tox", "pre-commit"]
 name = "protobuf"
 version = "4.21.6"
 description = ""
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -331,7 +331,7 @@ python-versions = ">=3.7"
 name = "pulumi"
 version = "3.40.0"
 description = "Pulumi's Python SDK"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -344,10 +344,10 @@ semver = ">=2.8,<3.0"
 six = ">=1.12,<2.0"
 
 [[package]]
-name = "pulumi-aws-native"
-version = "0.29.0"
-description = "A native Pulumi package for creating and managing Amazon Web Services (AWS) resources."
-category = "dev"
+name = "pulumi-aws"
+version = "5.13.0"
+description = "A Pulumi package for creating and managing Amazon Web Services (AWS) cloud resources."
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -425,7 +425,7 @@ six = ">=1.5"
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -451,7 +451,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 name = "semver"
 version = "2.13.0"
 description = "Python helper for Semantic Versioning (http://semver.org/)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -553,7 +553,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "afd676f4128e6986c45e487be63b242e7ff9e8efef15137f900fd58c71de5e6f"
+content-hash = "d757e0bd7c72c5497fa8bf24a942d7f9dea3a1ea770fe7af9c4b865164a0edde"
 
 [metadata.files]
 aiohttp = [
@@ -976,8 +976,8 @@ protobuf = [
 pulumi = [
     {file = "pulumi-3.40.0-py3-none-any.whl", hash = "sha256:03d57d5cb551b2243203a8a7575c3357d0a356a8bb9e2b51f43a7845729c1340"},
 ]
-pulumi-aws-native = [
-    {file = "pulumi_aws_native-0.29.0.tar.gz", hash = "sha256:bb23cd31618838f07a1fb6f9b255d20b6eb32a8619d32056815b425bc7deaed0"},
+pulumi-aws = [
+    {file = "pulumi_aws-5.13.0.tar.gz", hash = "sha256:88a8a88b801098717077cd40d14b4ec1690507ac634ac24059533ab3364af1fa"},
 ]
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
