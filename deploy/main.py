@@ -88,7 +88,7 @@ productizerer_fn = lambda_.Function(
             )
         }
     ),
-    code=pulumi.AssetArchive({".": pulumi.FileArchive("../productizer")}),  # type: ignore
+    code=pulumi.AssetArchive({"productizer": pulumi.FileArchive("../productizer")}),  # type: ignore
 )
 
 state_defn = state_machine = stepfunctions.StateMachine(
