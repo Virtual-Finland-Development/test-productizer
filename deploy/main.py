@@ -85,7 +85,7 @@ productizerer_fn = lambda_.Function(
             )
         }
     ),
-    code=pulumi.AssetArchive({".": pulumi.FileArchive("./productizer")}),
+    code=pulumi.AssetArchive({".": pulumi.FileArchive("../productizer")}),
     handler="productizer.main.handler",
 )
 
