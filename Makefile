@@ -16,3 +16,5 @@ lint-check:
 	poetry run black ./productizer --check
 build:
 	poetry build
+deploy:
+	poetry pulumi up
