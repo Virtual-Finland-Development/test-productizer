@@ -16,5 +16,6 @@ lint-check:
 	poetry run black ./productizer --check
 build:
 	poetry build
-deploy:
-	poetry pulumi up
+pulumi:
+	poetry run pulumi stack select virtualfinland/dev
+	poetry run pulumi up

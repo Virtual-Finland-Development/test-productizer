@@ -3,5 +3,5 @@ description: Simple framework for productizer apis
 runtime:
   name: python
   options:
-    virtualenv: venv
-main: deploy/main
+    virtualenv: .venv
+main: deploy/main.py

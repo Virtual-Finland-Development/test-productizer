@@ -4,7 +4,7 @@ from productizer.utils.settings import get_setting
 
 lambda_role = iam.Role(
     "lambdaRole",
-    assume_role_policy="""{
+    assume_role_policy_document="""{
         "Version": "2012-10-17",
         "Statement": [
             {
@@ -38,7 +38,7 @@ lambda_role_policy = iam.RolePolicy(  # type: ignore
 
 sfn_role = iam.Role(
     "sfnRole",
-    assume_role_policy="""{
+    assume_role_policy_document="""{
         "Version": "2012-10-17",
         "Statement": [
             {
