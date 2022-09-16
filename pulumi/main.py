@@ -36,12 +36,14 @@ lambda_role_attachment = aws.iam.RolePolicyAttachment(
 """
 Packakge the lambda function, layerify dependencies.
 """
-# dependenciesLayer = aws.lambda_.LayerVersion(
-#    "dependenciesLayer-v1",
-#    layer_name="dependencies-layer",
-#    code=pulumi.asset.AssetArchive({".": pulumi.FileArchive("./.lambda/layer/")}),
-#    compatible_runtimes=[aws.lambda_.Runtime.PYTHON3D9],
-# )
+dependenciesLayer = aws.lambda_.LayerVersion(
+    "dependenciesLayer-v1",
+    layer_name="dependencies-layer",
+    code=pulumi.asset.AssetArchive(
+        {"./python": pulumi.FileArchive("./.lambda/layer/")}
+    ),
+    compatible_runtimes=[aws.lambda_.Runtime.PYTHON3D9],
+)
 
 
 """
@@ -64,7 +66,7 @@ productizerer_function = aws.lambda_.Function(
             "./productizer": pulumi.FileArchive("../productizer"),
         }
     ),
-    # layers=[dependenciesLayer.arn],
+    layers=[dependenciesLayer.arn],
 )
 
 lambda_url = aws_native.lambda_.Url(
@@ -80,7 +82,7 @@ add_permissions = local.Command(
         productizerer_function.name,
         f" --profile {get_setting('AWS_PROFILE')}"
         if has_setting("AWS_PROFILE")
-        else "",
+        else "",  # --profile virtualfinland
         " --action lambda:InvokeFunctionUrl --principal '*' --function-url-auth-type NONE --statement-id FunctionURLAllowPublicAccess",
     ),
     opts=pulumi.ResourceOptions(delete_before_replace=True),
