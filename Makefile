@@ -1,9 +1,8 @@
-include .env
 app = "productizer.main:app"
 puluni-stack = "virtualfinland/dev"
 
 install:
-	python -m pip install poetry
+	python -m pip install poetry poetry-dotenv-plugin
 	python -m poetry config virtualenvs.in-project true
 	python -m poetry install
 run:
@@ -27,7 +26,6 @@ build-for-pulumi:
 	python -m pip install -r ./pulumi/.lambda/requirements.txt -t ./pulumi/.lambda/layer
 init-pulumi: build-for-pulumi
 	python -m poetry run pulumi --cwd ./pulumi stack select ${puluni-stack} || poetry run pulumi --cwd ./pulumi stack init ${puluni-stack}
-	python -m poetry run pulumi --cwd ./pulumi config set AUTHORIZATION_GW_ENDPOINT_URL $(AUTHORIZATION_GW_ENDPOINT_URL)
 deploy-pulumi: init-pulumi
 	python -m poetry run pulumi --cwd ./pulumi --non-interactive up --yes
 deploy-pulumi-preview: init-pulumi

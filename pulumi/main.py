@@ -6,8 +6,6 @@ import pulumi_aws_native as aws_native
 from pulumi_command import local
 from productizer.utils.settings import get_setting, has_setting
 
-config = pulumi.Config()
-
 lambda_role = aws_native.iam.Role(
     "lambda_role",
     assume_role_policy_document=json.dumps(
@@ -56,8 +54,8 @@ productizerer_function = aws.lambda_.Function(
     handler="productizer.main.handler",
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
-            "AUTHORIZATION_GW_ENDPOINT_URL": config.require(
-                "AUTHORIZATION_GW_ENDPOINT_URL"
+            "AUTHORIZATION_GW_ENDPOINT_URL": get_setting(
+                "POETRY_AUTHORIZATION_GW_ENDPOINT_URL"
             ),
         },
     ),
@@ -80,8 +78,8 @@ add_permissions = local.Command(
     create=pulumi.Output.concat(
         "aws lambda add-permission --function-name ",
         productizerer_function.name,
-        f" --profile {get_setting('AWS_PROFILE')}"
-        if has_setting("AWS_PROFILE")
+        f" --profile {get_setting('POETRY_AWS_REGION')}"
+        if has_setting("POETRY_AWS_REGION")
         else "",  # --profile virtualfinland
         " --action lambda:InvokeFunctionUrl --principal '*' --function-url-auth-type NONE --statement-id FunctionURLAllowPublicAccess",
     ),
