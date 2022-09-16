@@ -12,7 +12,8 @@ from typing import (
 )
 import orjson
 import aiohttp
-from aiohttp.client_exceptions import ServerTimeoutError
+from aiohttp.client_exceptions import ClientConnectionError
+from asyncio.exceptions import TimeoutError
 from productizer.utils.helpers import (
     ensure_json_content_type_header,
     omit_empty_dict_attributes,
@@ -275,5 +276,7 @@ class Requester(Generic[T]):
                                 message=message,
                                 status_code=response_status_code,
                             )
-            except ServerTimeoutError:
-                raise RequesterTimeoutException()
+            except TimeoutError:
+                raise RequesterTimeoutException(name=self.requester_name)
+            except ClientConnectionError as e:
+                raise RequesterResponseException(name=self.requester_name, exception=e)
