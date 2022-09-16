@@ -1,0 +1,7 @@
+name: testbed-test-productizer
+description: Simple framework for productizer apis
+runtime:
+  name: python
+  options:
+    virtualenv: ../.venv
+main: main.py

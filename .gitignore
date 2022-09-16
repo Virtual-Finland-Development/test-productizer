@@ -6,3 +6,6 @@ __pycache__
 node_modules
 dist
 .serverless
+.env
+pulumi/.lambda
+pulumi/Pulumi.*.yml

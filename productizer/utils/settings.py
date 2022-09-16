@@ -2,6 +2,10 @@ import os
 from typing import Union
 
 
+def has_setting(setting_name: str) -> bool:
+    return os.getenv(setting_name) is not None
+
+
 def get_setting(setting_name: str, default_value: Union[str, None] = None) -> str:
     """Get the environment setting or return exception."""
     setting = os.getenv(setting_name)
