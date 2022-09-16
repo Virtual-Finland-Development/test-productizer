@@ -1,5 +1,0 @@
-config:
-  aws-native:profile: virtualfinland
-  aws-native:region: eu-north-1
-  aws:profile: virtualfinland
-  aws:region: eu-north-1

@@ -4,6 +4,9 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_aws_native as aws_native
 from pulumi_command import local
+from productizer.utils.settings import get_setting, has_setting
+
+config = pulumi.Config()
 
 lambda_role = aws_native.iam.Role(
     "lambda_role",
@@ -30,20 +33,42 @@ lambda_role_attachment = aws.iam.RolePolicyAttachment(
     policy_arn="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
 )
 
+"""
+Packakge the lambda function, layerify dependencies.
+"""
+# dependenciesLayer = aws.lambda_.LayerVersion(
+#    "dependenciesLayer-v1",
+#    layer_name="dependencies-layer",
+#    code=pulumi.asset.AssetArchive({".": pulumi.FileArchive("./.lambda/layer/")}),
+#    compatible_runtimes=[aws.lambda_.Runtime.PYTHON3D9],
+# )
+
+
+"""
+Create the lambda function
+"""
 productizerer_function = aws.lambda_.Function(
-    "test",
+    "testbed-test-productizer",
     runtime="python3.9",
     role=lambda_role.arn,
     handler="productizer.main.handler",
+    environment=aws.lambda_.FunctionEnvironmentArgs(
+        variables={
+            "AUTHORIZATION_GW_ENDPOINT_URL": config.require(
+                "AUTHORIZATION_GW_ENDPOINT_URL"
+            ),
+        },
+    ),
     code=pulumi.AssetArchive(
         {
-            ".": pulumi.FileArchive("."),
+            "./productizer": pulumi.FileArchive("./productizer"),
         }
     ),
+    # layers=[dependenciesLayer.arn],
 )
 
 lambda_url = aws_native.lambda_.Url(
-    "test",
+    "testbed-test-productizer-url",
     target_function_arn=productizerer_function.arn,
     auth_type=aws_native.lambda_.UrlAuthType.NONE,
 )
@@ -51,8 +76,11 @@ lambda_url = aws_native.lambda_.Url(
 add_permissions = local.Command(
     "add_permissions",
     create=pulumi.Output.concat(
-        "aws lambda add-permission --profile virtualfinland --function-name ",
+        "aws lambda add-permission --function-name ",
         productizerer_function.name,
+        f" --profile {get_setting('AWS_PROFILE')}"
+        if has_setting("AWS_PROFILE")
+        else "",
         " --action lambda:InvokeFunctionUrl --principal '*' --function-url-auth-type NONE --statement-id FunctionURLAllowPublicAccess",
     ),
     opts=pulumi.ResourceOptions(delete_before_replace=True),
