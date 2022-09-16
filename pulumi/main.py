@@ -83,7 +83,7 @@ add_permissions = local.Command(
     ),
     opts=pulumi.ResourceOptions(delete_before_replace=True),
     environment={
-        "AWS_REGION": get_setting("POETRY_AWS_REGION"),
+        "AWS_DEFAULT_REGION": get_setting("POETRY_AWS_REGION"),
         "AWS_ACCESS_KEY_ID": get_setting("POETRY_AWS_ACCESS_KEY_ID"),
         "AWS_SECRET_ACCESS_KEY": get_setting("POETRY_AWS_SECRET_ACCESS_KEY"),
     },
