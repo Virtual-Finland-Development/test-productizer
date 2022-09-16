@@ -1,4 +1,6 @@
+include .env
 app = "productizer.main:app"
+puluni-stack = "virtualfinland/dev"
 
 install:
 	python -m pip install poetry
@@ -16,9 +18,9 @@ lint-check:
 	poetry run black ./productizer --check
 build:
 	poetry build
-deploy-pulumi:
-	poetry run pulumi stack select virtualfinland/dev
-	poetry run pulumi up
-deploy-pulumi-preview:
-	poetry run pulumi stack select virtualfinland/dev
-	poetry run pulumi preview
+init-pulumi:
+	poetry run pulumi --cwd ./pulumi stack select ${puluni-stack} || poetry run pulumi --cwd ./pulumi stack init ${puluni-stack}
+deploy-pulumi: init-pulumi
+	poetry run pulumi --cwd ./pulumi up
+deploy-pulumi-preview: init-pulumi
+	poetry run pulumi --cwd ./pulumi preview
