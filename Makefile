@@ -25,6 +25,6 @@ init-pulumi:
 	poetry run pulumi --cwd ./pulumi stack select ${puluni-stack} || poetry run pulumi --cwd ./pulumi stack init ${puluni-stack}
 	poetry run pulumi --cwd ./pulumi config set AUTHORIZATION_GW_ENDPOINT_URL $(AUTHORIZATION_GW_ENDPOINT_URL)
 deploy-pulumi: init-pulumi
-	poetry run pulumi --cwd ./pulumi up
+	poetry run pulumi --cwd ./pulumi --non-interactive up 
 deploy-pulumi-preview: init-pulumi
-	poetry run pulumi --cwd ./pulumi preview
+	poetry run pulumi --cwd ./pulumi --non-interactive preview 
