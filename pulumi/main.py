@@ -4,7 +4,7 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_aws_native as aws_native
 from pulumi_command import local
-from productizer.utils.settings import get_setting, has_setting
+from productizer.utils.settings import get_setting
 
 lambda_role = aws_native.iam.Role(
     "lambda_role",
@@ -79,12 +79,14 @@ add_permissions = local.Command(
     create=pulumi.Output.concat(
         "aws lambda add-permission --function-name ",
         productizerer_function.name,
-        f" --profile {get_setting('POETRY_AWS_PROFILE')}"
-        if has_setting("POETRY_AWS_PROFILE")
-        else "",  # --profile virtualfinland
         " --action lambda:InvokeFunctionUrl --principal '*' --function-url-auth-type NONE --statement-id FunctionURLAllowPublicAccess",
     ),
     opts=pulumi.ResourceOptions(delete_before_replace=True),
+    environment={
+        "AWS_REGION": get_setting("POETRY_AWS_REGION"),
+        "AWS_ACCESS_KEY_ID": get_setting("POETRY_AWS_ACCESS_KEY_ID"),
+        "AWS_SECRET_ACCESS_KEY": get_setting("POETRY_AWS_SECRET_ACCESS_KEY"),
+    },
 )
 
 pulumi.export("url", lambda_url.function_url)
