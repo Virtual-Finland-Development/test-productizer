@@ -12,6 +12,7 @@ from typing import (
 )
 import orjson
 import aiohttp
+from aiohttp.client_exceptions import ServerTimeoutError
 from productizer.utils.helpers import (
     ensure_json_content_type_header,
     omit_empty_dict_attributes,
@@ -48,6 +49,7 @@ class BaseRequesterException(Exception):
     name: Optional[Union[str, Dict[str, Any]]] = None
     exception: Optional[Exception] = None
     message: Optional[str] = None
+    default_message: str = "Error"
     status_code: Optional[int] = None
     default_status_code: int = 500
 
@@ -72,7 +74,7 @@ class BaseRequesterException(Exception):
                 return str(self.name)
             prefix = f"{prefix}{self.name} -> "
         if self.exception is None:
-            message = self.message or "Error"
+            message = self.message or self.default_message
             if self.status_code is not None:
                 message = f"{message}: {self.status_code}"
             return f"{prefix}{message}"
@@ -85,6 +87,11 @@ class RequesterResponseParsingException(BaseRequesterException):
 
 
 class RequesterResponseException(BaseRequesterException):
+    pass
+
+
+class RequesterTimeoutException(BaseRequesterException):
+    default_message = "Request timed out"
     pass
 
 
@@ -233,37 +240,40 @@ class Requester(Generic[T]):
         request_method = method.upper() if method is not None else "GET"
 
         async with aiohttp.ClientSession(json_serialize=orjson_wrapped) as session:
-            async with session.request(request_method, url, **options) as res:
-                async with res:
-                    response_status_code = res.status
-                    if response_status_code == 200:
-                        try:
-                            if json:
-                                result = await res.json(loads=orjson.loads)
-                                return self.format_result(
-                                    result
-                                )  # throws validation errors that must be handled in the upper abstraction
-                            return await res.text()  # type: ignore
-                        except Exception as e:
-                            raise RequesterResponseParsingException(
-                                name=self.requester_name, exception=e
-                            )
-                    else:
-                        message = await res.text()
+            try:
+                async with session.request(request_method, url, **options) as res:
+                    async with res:
+                        response_status_code = res.status
+                        if response_status_code == 200:
+                            try:
+                                if json:
+                                    result = await res.json(loads=orjson.loads)
+                                    return self.format_result(
+                                        result
+                                    )  # throws validation errors that must be handled in the upper abstraction
+                                return await res.text()  # type: ignore
+                            except Exception as e:
+                                raise RequesterResponseParsingException(
+                                    name=self.requester_name, exception=e
+                                )
+                        else:
+                            message = await res.text()
 
-                        if (
-                            self.exceptions is not None
-                            and response_status_code in self.exceptions.keys()
-                        ):
-                            raise self.exceptions[response_status_code](
-                                {
-                                    "name": self.requester_name,
-                                    "message": message,
-                                    "status_code": response_status_code,
-                                }
+                            if (
+                                self.exceptions is not None
+                                and response_status_code in self.exceptions.keys()
+                            ):
+                                raise self.exceptions[response_status_code](
+                                    {
+                                        "name": self.requester_name,
+                                        "message": message,
+                                        "status_code": response_status_code,
+                                    }
+                                )
+                            raise RequesterResponseException(
+                                name=self.requester_name,
+                                message=message,
+                                status_code=response_status_code,
                             )
-                        raise RequesterResponseException(
-                            name=self.requester_name,
-                            message=message,
-                            status_code=response_status_code,
-                        )
+            except ServerTimeoutError:
+                raise RequesterTimeoutException()
