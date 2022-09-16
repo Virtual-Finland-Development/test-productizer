@@ -5,17 +5,8 @@
 name: Build and test
 
 on:
-  schedule:
-    - cron: "1 11 * * 2" # automaticly test once a week
-  # support calling this workflow from other workflows
-  # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#creating-a-reusable-workflow
-  workflow_call:
   workflow_dispatch:
-  # support running this workflow on push events
-  # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
-  push:
-    branches-ignore:
-      - main
+  pull_request:
 
 permissions:
   contents: read
