@@ -65,6 +65,7 @@ productizerer_function = aws.lambda_.Function(
         }
     ),
     layers=[dependenciesLayer.arn],
+    timeout=15,
 )
 
 lambda_url = aws_native.lambda_.Url(
@@ -78,8 +79,8 @@ add_permissions = local.Command(
     create=pulumi.Output.concat(
         "aws lambda add-permission --function-name ",
         productizerer_function.name,
-        f" --profile {get_setting('POETRY_AWS_REGION')}"
-        if has_setting("POETRY_AWS_REGION")
+        f" --profile {get_setting('POETRY_AWS_PROFILE')}"
+        if has_setting("POETRY_AWS_PROFILE")
         else "",  # --profile virtualfinland
         " --action lambda:InvokeFunctionUrl --principal '*' --function-url-auth-type NONE --statement-id FunctionURLAllowPublicAccess",
     ),

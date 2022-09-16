@@ -20,6 +20,9 @@ build:
 clean:
 	rm -rf .venv
 	rm -rf ./pulumi/.lambda
+set-region:
+	python -m poetry run pulumi --cwd ./pulumi config set aws:region ${AWS_REGION}
+	python -m poetry run pulumi --cwd ./pulumi config set aws-native:region ${AWS_REGION}
 build-for-pulumi:
 	mkdir -p ./pulumi/.lambda
 	python -m poetry export --without-hashes -f requirements.txt --output ./pulumi/.lambda/requirements.txt
