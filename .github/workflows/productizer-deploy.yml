@@ -16,9 +16,11 @@ env:
 
 jobs:
   build-and-test:
+    name: "Build and test"
     # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#calling-a-reusable-workflow
     uses: Virtual-Finland-Development/testbed-test-productizer/.github/workflows/build-and-test.yml@main
   deploy:
+    name: "Deploy"
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
