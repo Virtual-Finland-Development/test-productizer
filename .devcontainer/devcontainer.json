@@ -24,7 +24,10 @@
           "bash": {
             "path": "/bin/bash"
           }
-        }
+        },
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.analysis.typeCheckingMode": "strict"
       },
 
       // Add the IDs of extensions you want installed when the container is created.
