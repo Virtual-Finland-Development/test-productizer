@@ -19,6 +19,15 @@ Read more from the front app data requesting guidelines from ioxio.com/guides: [
 
 ## Running the app
 
+The development setup can be set up using docker, docker compose, vscode devcontainers or with local tools
+
+### Run with vscode devcontainer
+
+Read more of the vscode devcontainers here: https://code.visualstudio.com/docs/remote/containers
+
+- Open the project folder as devcontainer
+- In the container, start development with a terminal command `make dev`
+
 ### Run locally with docker
 
 #### docker compose
