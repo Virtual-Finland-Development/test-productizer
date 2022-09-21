@@ -27,7 +27,8 @@
         },
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.linting.enabled": true,
-        "python.analysis.typeCheckingMode": "strict"
+        "python.analysis.typeCheckingMode": "strict",
+        "editor.formatOnSave": true
       },
 
       // Add the IDs of extensions you want installed when the container is created.
