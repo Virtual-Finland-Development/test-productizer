@@ -25,15 +25,17 @@
             "path": "/bin/bash"
           }
         },
-        "python.defaultInterpreterPath": "/usr/local/bin/python",
-        "python.formatting.blackPath": "${containerWorkspaceFolder}/.venv/bin/black",
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+        "python.pythonPath": "/usr/local/bin/python",
         "python.linting.enabled": true,
+        "python.formatting.blackPath": "${containerWorkspaceFolder}/.venv/bin/black",
+        //"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
         "python.analysis.typeCheckingMode": "strict",
         "editor.formatOnSave": true
       },
 
       // Add the IDs of extensions you want installed when the container is created.
-      "extensions": ["ms-python.python", "ms-python.vscode-pylance", "oderwat.indent-rainbow", "zeshuaro.vscode-python-poetry", "eamodio.gitlens"]
+      "extensions": ["ms-python.python", "oderwat.indent-rainbow", "zeshuaro.vscode-python-poetry", "eamodio.gitlens"]
     }
   },
 

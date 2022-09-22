@@ -15,6 +15,7 @@ router = APIRouter()
     summary="test/lsipii/Figure/Population Data Product",
     description="A test Data Product for the population query",
     response_model=PopulationDataProductResponse,
+    responses={401: {"model": Authorizator.AccessDeniedResponse}},
 )
 async def population(
     request: PopulationDataProductRequest,

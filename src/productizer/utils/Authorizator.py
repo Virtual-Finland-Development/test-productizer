@@ -4,6 +4,11 @@ from productizer.utils.Requester import fetch
 from productizer.utils.helpers import base64_encode
 from productizer.utils.settings import get_setting, if_test_mode
 from urllib.parse import quote
+from pydantic import BaseModel
+
+
+class AccessDeniedResponse(BaseModel):
+    message: str
 
 
 def generate_app_context() -> str:
@@ -25,9 +30,7 @@ async def authorize(authorization_header: Union[str, None]) -> None:
             "method": "POST",
             "data": {
                 "appContext": generate_app_context(),
-                "token": authorization_header.lstrip("Bearer ")
-                if authorization_header
-                else "",
+                "token": authorization_header.lstrip("Bearer ") if authorization_header else "",
             },
         }
     )
