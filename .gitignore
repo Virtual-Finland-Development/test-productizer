@@ -1,6 +1,7 @@
 .venv
 **/*.pyc
 .vscode
+!.vscode/tasks.json
 .pytest_cache
 __pycache__
 node_modules
