@@ -1,4 +1,4 @@
-app = "productizer.main:app"
+app = "src.productizer.main:app"
 puluni-stack = "virtualfinland/dev"
 
 install:
@@ -12,9 +12,9 @@ dev:
 test:
 	python -m poetry run pytest
 lint:
-	python -m poetry run black ./productizer
+	python -m poetry run black ./src/productizer
 lint-check:
-	python -m poetry run black ./productizer --check
+	python -m poetry run black ./src/productizer --check
 build:
 	python -m poetry build
 clean:

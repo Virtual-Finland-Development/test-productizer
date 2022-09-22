@@ -61,7 +61,7 @@ productizerer_function = aws.lambda_.Function(
     ),
     code=pulumi.AssetArchive(
         {
-            "./productizer": pulumi.FileArchive("../productizer"),
+            "./productizer": pulumi.FileArchive("../src/productizer"),
         }
     ),
     layers=[dependenciesLayer.arn],
