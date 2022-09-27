@@ -1,6 +1,6 @@
 # testbed-test-productizer
 
-A simple test testbed-productizer app
+An example data productizer app / API framework for python data producizers for the Virtual Finland Development -uses.
 
 ![Build](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/build-and-test.yml/badge.svg?branch=main)
 ![Deploy](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/productizer-deploy.yml/badge.svg)
