@@ -28,7 +28,8 @@ The development setup can be set up using docker, docker compose, vscode devcont
 Read more of the vscode devcontainers here: https://code.visualstudio.com/docs/remote/containers
 
 - Open the project folder as devcontainer
-- In the container, start development with a terminal command `make dev`
+- Browse the API-docs at http://localhost:8000/
+  - In the container, the default `postStartCommand` is set to `make dev` which should publish the endpoint
 
 ### Run locally with docker
 
