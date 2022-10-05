@@ -18,7 +18,7 @@ async def authorize(authorization_bearer_token: Union[str, None], authorization_
 
     await fetch(
         {
-            "url": f"{get_setting('AUTHORIZATION_GW_ENDPOINT_URL')}/auth/authorize",
+            "url": f"{get_setting('AUTHORIZATION_GW_ENDPOINT_URL')}/authorize",
             "method": "POST",
             "headers": {
                 "Authorization": authorization_bearer_token,
