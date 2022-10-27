@@ -234,7 +234,7 @@ class Requester(Generic[T]):
             opts["headers"] = ensure_json_content_type_header(headers)
         else:
             opts["body"] = data
-            opts["headers"] = headers
+            opts["headers"] = headers or {}
 
         options = omit_empty_dict_attributes(opts)
 
