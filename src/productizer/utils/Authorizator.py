@@ -21,8 +21,8 @@ async def authorize(authorization_bearer_token: Union[str, None], authorization_
             "url": f"{get_setting('AUTHORIZATION_GW_ENDPOINT_URL')}/authorize",
             "method": "POST",
             "headers": {
-                "Authorization": authorization_bearer_token,
-                "X-Authorization-Provider": authorization_provider,
+                "Authorization": authorization_bearer_token or "",
+                "X-Authorization-Provider": authorization_provider or "",
                 "X-Authorization-Provider-Context": "testbed-test-productizer",
             },
         }
