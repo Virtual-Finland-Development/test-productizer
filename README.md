@@ -3,7 +3,7 @@
 An example data productizer app / API framework for python data producizers for the Virtual Finland Development use-cases.
 
 ![Build](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/build-and-test.yml/badge.svg?branch=main)
-![Deploy](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/productizer-deploy.yml/badge.svg)
+![Deploy](https://github.com/Virtual-Finland-Development/testbed-test-productizer/actions/workflows/deploy-staging.yml/badge.svg)
 
 [![Open in Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Virtual-Finland-Development/testbed-test-productizer)
 

@@ -1,7 +1,7 @@
 # This workflow will build and deploy the python app with serverless framerwork
 # @see: https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions
 # @see: https://www.viget.com/articles/automating-build-deploy-ci-cd-with-github-actions/
-name: Productizer Deploy
+name: Deploy Dev
 
 on:
   workflow_call:
@@ -17,6 +17,7 @@ env:
 jobs:
   deploy:
     name: "Deploy"
+    environment: dev
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
