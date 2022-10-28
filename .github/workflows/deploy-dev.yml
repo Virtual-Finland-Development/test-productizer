@@ -4,7 +4,6 @@
 name: Deploy Dev
 
 on:
-  workflow_call:
   push:
     branches: ["main"]
 
@@ -15,14 +14,16 @@ env:
   python-version: 3.9
 
 jobs:
+  build-and-test:
+    uses: Virtual-Finland-Development/testbed-test-productizer/.github/workflows/build-and-test.yml@main
+    with:
+      puluni_stack: virtualfinland/dev
   deploy:
     name: "Deploy"
     environment: dev
     runs-on: ubuntu-latest
+    needs: build-and-test
     steps:
-      - uses: Virtual-Finland-Development/testbed-test-productizer/.github/workflows/build-and-test.yml@main
-        with:
-          puluni_stack: virtualfinland/dev
       # deploy!
       - name: Deploy with pulumi
         run: |
