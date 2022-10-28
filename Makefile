@@ -1,5 +1,5 @@
 app = "src.productizer.main:app"
-puluni-stack = "virtualfinland/dev"
+puluni_stack = "virtualfinland/dev"
 
 install:
 	python -m pip install poetry poetry-dotenv-plugin
@@ -25,7 +25,7 @@ build-for-pulumi:
 	python -m poetry export --without-hashes -f requirements.txt --output ./pulumi/.lambda/requirements.txt
 	python -m pip install -r ./pulumi/.lambda/requirements.txt -t ./pulumi/.lambda/layer
 init-pulumi: build-for-pulumi
-	python -m poetry run pulumi --cwd ./pulumi stack select ${puluni-stack} || poetry run pulumi --cwd ./pulumi stack init ${puluni-stack}
+	python -m poetry run pulumi --cwd ./pulumi stack select ${puluni_stack} || poetry run pulumi --cwd ./pulumi stack init ${puluni_stack}
 deploy-pulumi: init-pulumi
 	python -m poetry run pulumi --cwd ./pulumi --non-interactive up --yes
 deploy-pulumi-preview: init-pulumi
