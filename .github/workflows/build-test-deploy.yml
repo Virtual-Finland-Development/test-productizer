@@ -19,7 +19,7 @@ on:
         required: true
       AWS_REGION:
         required: true
-      POETRY_AUTHORIZATION_GW_ENDPOINT_URL:
+      AUTHORIZATION_GW_ENDPOINT_URL:
         required: true
 
 env:
