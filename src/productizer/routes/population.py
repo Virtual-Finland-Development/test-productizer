@@ -3,7 +3,9 @@ from typing import Union
 from fastapi import APIRouter, Header
 
 from productizer.services.StatFinPopulation.models.data_product import (
-    PopulationDataProductRequest, PopulationDataProductResponse)
+    PopulationDataProductRequest,
+    PopulationDataProductResponse,
+)
 from productizer.services.StatFinPopulation.service import get_population
 from productizer.utils import Authorizator
 
