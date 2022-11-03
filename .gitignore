@@ -6,7 +6,6 @@ node_modules
 dist
 .serverless
 .env
-infra/.lambda
 infra/Pulumi.*.yml
 .vscode/*
 !.vscode/tasks.json
