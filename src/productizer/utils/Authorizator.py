@@ -10,7 +10,10 @@ class AccessDeniedResponse(BaseModel):
     message: str
 
 
-async def authorize(authorization_bearer_token: Union[str, None], authorization_provider: Union[str, None]) -> None:
+async def authorize(
+    authorization_bearer_token: Union[str, None],
+    authorization_provider: Union[str, None],
+) -> None:
     """
     Throws 401 if not authorized
     """

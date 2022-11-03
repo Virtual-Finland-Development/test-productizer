@@ -3,9 +3,7 @@ from typing import Union
 from fastapi import APIRouter, Header
 
 from productizer.services.StatFinPopulation.models.data_product import (
-    PopulationDataProductRequest,
-    PopulationDataProductResponse,
-)
+    PopulationDataProductRequest, PopulationDataProductResponse)
 from productizer.services.StatFinPopulation.service import get_population
 from productizer.utils import Authorizator
 
@@ -24,5 +22,7 @@ async def population(
     Authorization: Union[str, None] = Header(default=None),
     X_Authorization_Provider: Union[str, None] = Header(default=None),
 ):
-    await Authorizator.authorize(Authorization, X_Authorization_Provider)  # raises 401 if not authorized
+    await Authorizator.authorize(
+        Authorization, X_Authorization_Provider
+    )  # raises 401 if not authorized
     return await get_population(request)
