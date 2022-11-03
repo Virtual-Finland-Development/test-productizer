@@ -1,0 +1,8 @@
+config:
+  aws-native:profile: virtualfinland
+  aws-native:region: eu-north-1
+  aws:profile: virtualfinland
+  aws:region: eu-north-1
+  aws:skipCredentialsValidation: false
+  aws:skipMetadataApiCheck: false
+  testbed-test-productizer:AUTHORIZATION_GW_ENDPOINT_URL: https://c7ig58qwk1.execute-api.eu-north-1.amazonaws.com/
