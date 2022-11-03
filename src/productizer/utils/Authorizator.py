@@ -1,8 +1,9 @@
 from typing import Union
 
+from pydantic import BaseModel
+
 from productizer.utils.Requester import fetch
 from productizer.utils.settings import get_setting, if_test_mode
-from pydantic import BaseModel
 
 
 class AccessDeniedResponse(BaseModel):

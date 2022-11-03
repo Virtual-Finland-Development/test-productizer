@@ -1,6 +1,7 @@
 from typing import Union
 
 from fastapi import APIRouter, Header
+
 from productizer.services.StatFinPopulation.models.data_product import (
     PopulationDataProductRequest,
     PopulationDataProductResponse,

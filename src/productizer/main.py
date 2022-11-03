@@ -1,15 +1,15 @@
 from logging import getLogger
 
-from fastapi import FastAPI, Request as FastAPIRequest
-from fastapi.responses import ORJSONResponse
+from fastapi import FastAPI
+from fastapi import Request as FastAPIRequest
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from mangum import Mangum
-from productizer.utils.logger import LoggingMiddleware
 
+from productizer.utils.logger import LoggingMiddleware
 from productizer.utils.Requester import BaseRequesterException
 
 from .routes import base, population
-
 
 #
 # FastAPI app definition
