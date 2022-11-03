@@ -1,9 +1,11 @@
 # @see: https://www.pulumi.com/blog/lambda-urls-launch/
 import json
-import pulumi
+
 import pulumi_aws as aws
 import pulumi_aws_native as aws_native
 from pulumi_command import local
+
+import pulumi
 from productizer.utils.settings import get_setting
 
 lambda_role = aws_native.iam.Role(
@@ -37,12 +39,9 @@ Packakge the lambda function, layerify dependencies.
 dependenciesLayer = aws.lambda_.LayerVersion(
     "dependenciesLayer-v1",
     layer_name="dependencies-layer",
-    code=pulumi.asset.AssetArchive(
-        {"./python": pulumi.FileArchive("./.lambda/layer/")}
-    ),
+    code=pulumi.asset.AssetArchive({"./python": pulumi.FileArchive("./.lambda/layer/")}),
     compatible_runtimes=[aws.lambda_.Runtime.PYTHON3D9],
 )
-
 
 """
 Create the lambda function
@@ -54,9 +53,7 @@ productizerer_function = aws.lambda_.Function(
     handler="productizer.main.handler",
     environment=aws.lambda_.FunctionEnvironmentArgs(
         variables={
-            "AUTHORIZATION_GW_ENDPOINT_URL": get_setting(
-                "POETRY_AUTHORIZATION_GW_ENDPOINT_URL"
-            ),
+            "AUTHORIZATION_GW_ENDPOINT_URL": get_setting("POETRY_AUTHORIZATION_GW_ENDPOINT_URL"),
         },
     ),
     code=pulumi.AssetArchive(
@@ -66,6 +63,7 @@ productizerer_function = aws.lambda_.Function(
     ),
     layers=[dependenciesLayer.arn],
     timeout=15,
+    tags={"Name": "testbed-test-productizer", "Environment": pulumi.get_stack(), "Project": "Virtual Finland"},
 )
 
 lambda_url = aws_native.lambda_.Url(
