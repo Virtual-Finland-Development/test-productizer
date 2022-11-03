@@ -19,14 +19,14 @@ build:
 	python -m poetry build
 clean:
 	rm -rf .venv
-	rm -rf ./pulumi/.lambda
+	rm -rf ./infra/.lambda
 build-for-pulumi:
-	mkdir -p ./pulumi/.lambda
-	python -m poetry export --without-hashes -f requirements.txt --output ./pulumi/.lambda/requirements.txt
-	python -m pip install -r ./pulumi/.lambda/requirements.txt -t ./pulumi/.lambda/layer
+	mkdir -p ./infra/.lambda
+	python -m poetry export --without-hashes -f requirements.txt --output ./infra/.lambda/requirements.txt
+	python -m pip install -r ./infra/.lambda/requirements.txt -t ./infra/.lambda/layer
 init-pulumi: build-for-pulumi
-	python -m poetry run pulumi --cwd ./pulumi stack select ${puluni_stack} || poetry run pulumi --cwd ./pulumi stack init ${puluni_stack}
+	python -m poetry run pulumi --cwd ./infra stack select ${puluni_stack} || poetry run pulumi --cwd ./infra stack init ${puluni_stack}
 deploy-pulumi: init-pulumi
-	python -m poetry run pulumi --cwd ./pulumi --non-interactive up --yes
+	python -m poetry run pulumi --cwd ./infra --non-interactive up --yes
 deploy-pulumi-preview: init-pulumi
-	python -m poetry run pulumi --cwd ./pulumi --non-interactive preview 
+	python -m poetry run pulumi --cwd ./infra --non-interactive preview 
