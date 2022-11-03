@@ -7,7 +7,7 @@ name: Build and test
 on:
   workflow_call:
     inputs:
-      puluni_stack:
+      environment:
         required: true
         type: string
     secrets:
@@ -22,16 +22,14 @@ on:
       POETRY_AUTHORIZATION_GW_ENDPOINT_URL:
         required: true
 
-permissions:
-  contents: read
-
 env:
   python-version: 3.9
 
 jobs:
-  build-and-test:
-    name: "Build and test"
+  build-test-deploy:
+    name: "Build, test and deploy"
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ env.python-version }}
@@ -49,10 +47,9 @@ jobs:
       - name: Test with pytest
         run: |
           make test
-      # preview stac
-      - name: Preview pulumi stack
+      - name: Deploy with pulumi
         run: |
-          make deploy-pulumi-preview puluni_stack=${{ inputs.puluni_stack }}
+          make deploy-pulumi puluni_stack=virtualfinland/${{ inputs.environment }}
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
