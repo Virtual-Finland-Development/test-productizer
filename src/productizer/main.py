@@ -49,7 +49,7 @@ async def requester_exception_handler(
     request: FastAPIRequest, exception: BaseRequesterException
 ):
     status_code = exception.status_code or exception.default_status_code
-    content = {"detail": str(exception)}
+    content = {"message": str(exception)}
     logger.warning("Exception status code: %d, content: %s", status_code, content)
 
     return ORJSONResponse(
