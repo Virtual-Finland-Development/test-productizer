@@ -12,7 +12,6 @@ class AccessDeniedResponse(BaseModel):
 
 async def authorize(
     authorization_bearer_token: Union[str, None],
-    authorization_provider: Union[str, None],
 ) -> None:
     """
     Throws 401 if not authorized
@@ -26,8 +25,7 @@ async def authorize(
             "method": "POST",
             "headers": {
                 "Authorization": authorization_bearer_token or "",
-                "X-Authorization-Provider": authorization_provider or "",
-                "X-Authorization-Provider-Context": "testbed-test-productizer",
+                "X-Authorization-Context": "testbed-test-productizer",
             },
         }
     )
