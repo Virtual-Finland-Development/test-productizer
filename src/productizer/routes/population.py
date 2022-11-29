@@ -22,9 +22,6 @@ router = APIRouter()
 async def population(
     request: PopulationDataProductRequest,
     Authorization: Union[str, None] = Header(default=None),
-    X_Authorization_Provider: Union[str, None] = Header(default=None),
 ):
-    await Authorizator.authorize(
-        Authorization, X_Authorization_Provider
-    )  # raises 401 if not authorized
+    await Authorizator.authorize(Authorization)  # raises 401 if not authorized
     return await get_population(request)
