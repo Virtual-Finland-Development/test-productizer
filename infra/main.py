@@ -1,11 +1,11 @@
 # @see: https://www.pulumi.com/blog/lambda-urls-launch/
 import json
 
+import pulumi
 import pulumi_aws as aws
 import pulumi_aws_native as aws_native
 from pulumi_command import local
 
-import pulumi
 from productizer.utils.settings import get_setting
 
 lambda_role = aws_native.iam.Role(
@@ -51,11 +51,6 @@ productizerer_function = aws.lambda_.Function(
     runtime="python3.9",
     role=lambda_role.arn,
     handler="productizer.main.handler",
-    environment=aws.lambda_.FunctionEnvironmentArgs(
-        variables={
-            "AUTHORIZATION_GW_ENDPOINT_URL": get_setting("POETRY_AUTHORIZATION_GW_ENDPOINT_URL"),
-        },
-    ),
     code=pulumi.AssetArchive(
         {
             "./productizer": pulumi.FileArchive("../src/productizer"),
