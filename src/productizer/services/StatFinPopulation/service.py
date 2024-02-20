@@ -57,7 +57,7 @@ async def get_population(
             "data": {
                 "query": [
                     {
-                        "code": f"Alue 2021",
+                        "code": f"Alue",
                         "selection": {"filter": "item", "values": [API_code_for_area]},
                     },
                     {
